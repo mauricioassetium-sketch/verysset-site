@@ -479,6 +479,24 @@ STAT_ICONS = {
                     '<circle class="acf" cx="12" cy="12" r="2.8"/>'),
 }
 
+STAT_ICONS.update({
+    "modes": _svg("ci", "Verification modes converging",
+                  '<rect x="3" y="3" width="6" height="6" rx="1.2"/><rect x="15" y="3" width="6" height="6" rx="1.2"/>'
+                  '<rect x="3" y="15" width="6" height="6" rx="1.2"/><rect x="15" y="15" width="6" height="6" rx="1.2"/>'
+                  '<path d="M9 9l1.3 1.3M15 9l-1.3 1.3M9 15l1.3-1.3M15 15l-1.3-1.3"/>'
+                  '<circle class="acf" cx="12" cy="12" r="2.2"/>'),
+    "replica": _svg("ci", "Digital twin replica accuracy",
+                    '<rect x="3" y="3" width="12" height="12" rx="1.5"/>'
+                    '<rect x="9" y="9" width="12" height="12" rx="1.5" stroke-dasharray="2.2 2.2"/>'
+                    '<rect class="acf" x="9" y="9" width="6" height="6"/>'),
+    "layers": _svg("ci", "Digital twin layers",
+                   '<path class="acf" d="M12 3.2 20.5 7.6 12 12 3.5 7.6z"/>'
+                   '<path d="M3.5 12 12 16.4 20.5 12M3.5 16.4 12 20.8 20.5 16.4"/>'),
+    "chain": _svg("ci", "Data pedigree chain",
+                  '<path d="M10 7.5H7.2a4.5 4.5 0 0 0 0 9H10M14 7.5h2.8a4.5 4.5 0 0 1 0 9H14"/>'
+                  '<rect class="acf" x="7.5" y="10.8" width="9" height="2.4" rx="1.2"/>'),
+})
+
 BADGE_ICONS = {
     "interop": _svg("fbi", "Interoperability",
                     '<path d="M4 8.5h14M15 5l3.5 3.5L15 12M20 15.5H6M9 12l-3.5 3.5L9 19"/>'
@@ -514,7 +532,7 @@ FOOT = """</main>
 <p class="ents">Verysset Veritas Ledger Ltd. (Dubai, DIFC)</p>
 <p class="ents">Innovation Hub, Level 14, Gate Village Building 4<br>Dubai International Financial Centre (DIFC)<br>Dubai, United Arab Emirates</p></div>
 <div class="fcol"><h5>Platform</h5><a href="how-it-works.html">How it works</a><a href="engines.html">Engines</a><a href="how-it-works.html#services">Services</a><a href="markets.html">Markets</a></div>
-<div class="fcol"><h5>Institutions</h5><a href="institutions.html">Actors &amp; savings</a><a href="compliance.html#licensing">Licensing</a><a href="compliance.html#governance">Governance</a><a href="faq.html">FAQ</a></div>
+<div class="fcol"><h5>Institutions</h5><a href="institutions.html">Actors &amp; audit</a><a href="compliance.html#licensing">Licensing</a><a href="compliance.html#governance">Governance</a><a href="faq.html">FAQ</a></div>
 <div class="fcol"><h5>Contact</h5><a href="mailto:CONTACT_EMAIL_TOKEN">CONTACT_EMAIL_TOKEN</a><a href="contact.html">Request a meeting</a><a href="compliance.html#jurisdiction">Jurisdiction</a><a href="compliance.html">Legal</a><a href="partners.html">Partners</a></div>
 </div>
 <div class="fbot"><span class="fcopy">&copy; 2026 VERYSSET. All rights reserved.</span>
@@ -572,20 +590,34 @@ ENGINES = [
      ["Full evidence lineage retained", "Dynamic trust score output", "Reconstructable end to end history", "Score linked to instruments"]),
 ]
 
-ACTORS = [
-    ("01", "15 to 30%", "Banks &amp; financial institutions", "Cut duplicated due diligence and rework across lending and trade flows."),
-    ("02", "15 to 30%", "Regulated markets (carbon, energy, commodities)", "Replace fragmented audits with one continuous compliance record."),
-    ("03", "10 to 25%", "Real world asset owners", "Keep assets verified without the cost of repeated inspections."),
-    ("04", "20 to 35%", "Issuers of financial &amp; digital instruments (RWA)", "Anchor instruments to evidence that updates itself."),
-    ("05", "20 to 35%", "Asset operators &amp; managers", "One live view of every asset instead of periodic reports."),
-    ("06", "20 to 45%", "Tokenization platforms &amp; institutional DLTs", "Mint against verifiable truth, not static declarations."),
-    ("07", "25 to 40%", "Custodians, fiduciaries &amp; trust companies", "Reduce reconciliation and exception handling."),
-    ("08", "15 to 30%", "Auditors, verifiers &amp; compliance firms", "Shift effort from rechecking to higher value assurance."),
-    ("09", "30 to 50%", "Regulators &amp; supervisory authorities", "Monitor continuously and act on signal, not lag."),
-    ("10", "10 to 25%", "Insurers &amp; reinsurers", "Price risk on current condition, not stale data."),
-    ("11", "20 to 40%", "Governments &amp; public agencies", "Turn public assets into continuously auditable records."),
-    ("12", "10 to 20%", "Institutional funds &amp; professional investors", "Know the true state of holdings at any moment."),
-]
+# Institutions & actors: facts from the Assetium presentation (v4 EN). Auditor names are set
+# as plain typographic badges, never the firms' logos (trademarks).
+AUDITORS = ["Deloitte", "PwC", "EY", "KPMG"]
+
+PEDIGREE = [("01", "Source capture"), ("02", "Source authentication"), ("03", "Ingestion &amp; cleaning"),
+            ("04", "Cross-validation"), ("05", "Twin integration"), ("06", "DLT registration")]
+
+# Low to high, so the band reads 0 to 100 in reading direction and mirrors under dir=rtl.
+# Segments are equal width on purpose: the printed ranges carry the scale, the bar carries order.
+TRUST_BANDS = [("hold", "Hold", "&lt;60"), ("watch", "Watch", "60-74"), ("std", "Standard", "75-84"),
+               ("prem", "Premium", "85-89"), ("ent", "Enterprise", "90-100")]
+
+VERIFY_MODES = ["Optical satellite imagery", "SAR radar, all-weather 24/7", "LiDAR 3D precision mapping",
+                "Drone fleets (fixed-wing, multirotor, BVLOS)", "Industrial IoT sensors",
+                "Infrared &amp; thermal cameras", "Environmental sensors", "Smart energy meters",
+                "H2 quality analyzers", "BIM &amp; building sensors", "Public registries &amp; land records",
+                "Regulatory bodies", "Commodity &amp; metals exchanges", "Carbon &amp; energy markets",
+                "Reference financial data providers", "International standards &amp; certification",
+                "Regional field verification services"]
+
+IA_STATS = [("modes", "100+", "Verification modes",
+             "Optical, SAR radar, LiDAR, drones, IoT and registries, cross-validated per asset."),
+            ("replica", "99.9%", "Replica accuracy",
+             "Fidelity of every digital twin to the physical asset it mirrors."),
+            ("layers", "9", "Twin layers",
+             "Nine layers compose every digital twin, audited before delivery."),
+            ("chain", "6", "Data pedigree stages",
+             "From source capture to DLT registration, stage by stage.")]
 
 MARKETS = [
     ("01", "Carbon Credits", "End to end verification of carbon assets, from origination to retirement."),
@@ -997,7 +1029,7 @@ def build_index():
     for i, (href, kn, t, p) in enumerate([
         ("how-it-works.html", "Platform", "How it works", "Structured ingestion, continuous verification, custody and scoring, plus the full service stack."),
         ("engines.html", "Technology", "The three engines", "Geo Sentinel, the Aura Verification Engine and the Pedigree Engine in detail."),
-        ("institutions.html", "Institutions", "Validation and savings", "Institutional validation criteria and twelve actor profiles with expected savings."),
+        ("institutions.html", "Institutions", "Validation and audit", "Validation criteria, Big 4 audited digital twins and the continuous Trust Score."),
         ("markets.html", "Mandates", "Twelve markets", "One verification infrastructure applied across every class of institutional capital."),
         ("tokenization.html", "RWA", "Tokenization", "Ingest, score and anchor: the process line that links instruments to evidence."),
         ("compliance.html", "Legal", "Compliance and DIFC", "Neutral by design, DIFC incorporated, aligned with MiCA, MAS, VARA and FATF."),
@@ -1156,20 +1188,46 @@ def build_institutions():
     b.append(vgrid())
     b.append('</div></section>')
 
+    # Institutions & actors: continuous verification, Big 4 audit, data pedigree, Trust Score bands
     b.append('<section class="sec alt" id="actors"><div class="wrap">')
-    b.append('<div class="head-split"><div class="rv"><span class="eb">Institutions &amp; actors</span>'
-             '<h2 class="t">Savings by changing the physics of control.</h2></div>'
-             '<div class="rv" data-i="1"><p class="lede" style="margin-top:0">From point in time, fragmented, reactive verification '
-             'to continuous, auditable, verifiable verification. The numbers reflect less repetitive work, less friction, '
-             'less hidden risk.</p></div></div>')
-    b.append('<div class="alist mt">')
-    for i, (n, pct, h, p2) in enumerate(ACTORS):
-        b.append('<div class="a rv" data-i="%d"><span class="an">%s</span><span class="ap"><i>%s</i></span>'
-                 '<h4>%s</h4><p>%s</p></div>' % (min(i, 6), n, pct, h, p2))
+    b.append('<div class="head-split"><div class="rv"><span class="eb">Sovereign-grade infrastructure</span>'
+             '<h2 class="t">Institutions &amp; actors</h2></div>'
+             '<div class="rv" data-i="1"><p class="ia-lead">Continuous verification of real-world assets, audited end to end.</p>'
+             '<p class="lede">Every asset is cross-validated against 100+ verification modes, from satellite and SAR radar '
+             'to IoT sensors and public registries. Every digital twin is independently audited by the Big 4 '
+             '(Deloitte, PwC, EY, KPMG) before delivery, reaches 99.9% replica accuracy across 9 twin layers, '
+             'and carries a 6-stage data pedigree from source capture to DLT registration.</p></div></div>')
+
+    b.append('<ul class="chips c4 rv" data-i="2" aria-label="Verification metrics: 100+ verification modes, '
+             '99.9% replica accuracy, 9 twin layers, 6-stage data pedigree">')
+    for ic, num, lab, cap in IA_STATS:
+        b.append('<li class="chip"><span class="cib">%s</span><div class="cbd"><b><bdi dir="ltr">%s</bdi></b>'
+                 '<span class="cl">%s</span><p class="cc">%s</p></div></li>' % (STAT_ICONS[ic], num, lab, cap))
+    b.append('</ul>')
+
+    b.append('<div class="ia-grid">')
+    b.append('<div class="ia-card rv"><span class="eb">Independent audit</span>'
+             '<h3 class="t3">Audited by the Big 4 before delivery.</h3>'
+             '<ul class="ia-aud" aria-label="Big 4 auditors: Deloitte, PwC, EY, KPMG">' +
+             "".join('<li lang="en" dir="ltr" data-noi18n>%s</li>' % a for a in AUDITORS) + '</ul>'
+             '<p class="ia-cap">Every digital twin independently audited before delivery.</p>'
+             '<p class="ia-note">Plus specialized firms per vertical. Mandatory by design.</p></div>')
+    b.append('<div class="ia-card rv" data-i="1"><span class="eb">Data pedigree</span>'
+             '<h3 class="t3">Six stages, from source to ledger.</h3><ol class="ia-ped">' +
+             "".join('<li><span class="ia-pn">%s</span><span class="ia-pt">%s</span></li>' % st for st in PEDIGREE) +
+             '</ol></div>')
     b.append('</div>')
-    b.append('<p class="lede rv" style="margin-top:28px">Ranges are expected savings on verification related effort once '
-             'continuous verification replaces repeated point in time work. They are indicative and confirmed per institution '
-             'during evaluation.</p>')
+
+    b.append('<div class="ia-card ia-trust rv">'
+             '<div class="ia-th"><div><span class="eb">Trust Score</span>'
+             '<h3 class="t3">One continuous score, from 0 to 100.</h3></div>'
+             '<p>The Aura Verification Engine ingests and cross-validates 100+ sources to produce a continuous Trust Score.</p></div>'
+             '<ol class="ia-band" aria-label="Trust Score bands, lowest to highest">' +
+             "".join('<li class="b-%s"><span class="ia-bar" aria-hidden="true"></span><span class="ia-bn">%s</span>'
+                     '<bdi class="ia-br" dir="ltr">%s</bdi></li>' % t for t in TRUST_BANDS) +
+             '</ol>'
+             '<div class="ia-src"><span class="ia-srl">Verification modes include</span><ul class="ia-modes">' +
+             "".join('<li>%s</li>' % vm for vm in VERIFY_MODES) + '</ul></div></div>')
     b.append('</div></section>')
 
     b.append('<section class="sec"><div class="wrap"><div class="g2b">')
@@ -1187,7 +1245,7 @@ def build_institutions():
 
     return page("institutions.html",
                 "Institutions | Verysset",
-                "Institutional validation criteria and twelve actor profiles with expected savings from continuous verification.",
+                "Institutional validation criteria, Big 4 audited digital twins, a 6-stage data pedigree and the continuous Trust Score for real world assets.",
                 "".join(b), prev=("engines.html", "Engines"), nxt=("markets.html", "Markets"))
 
 

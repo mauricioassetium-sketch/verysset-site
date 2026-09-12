@@ -1319,4 +1319,63 @@ html[lang=zh] .vpl-cap,html[lang=ar] .vpl-cap,html[lang=zh] .vpl-lab,html[lang=a
 @keyframes mrh{0%,47.78%{opacity:0;transform:scale(1)}48.22%{opacity:0.9;transform:scale(1)}60%{opacity:0;transform:scale(2.6)}60.33%,100%{opacity:0;transform:scale(1)}}
 @keyframes mri{0%,44.44%{opacity:0;transform:scale(0)}50%,87.78%{opacity:1;transform:none}94.44%,100%{opacity:0;transform:none}}
 }
+/* institutions: data pedigree packet flow, loop 8s */
+@media (prefers-reduced-motion:no-preference){
+.pd0,.pd1,.pd2,.pd3,.pd4,.pd5,.pd6,.pd7,.pd8,.pd9,.pda,.pdb,.pdc,.pdd,.pde,.pdf,.pdg,.pdh,.pdi,.pdj,.pdk,.pdl,.pdm,.pdn{transform-box:fill-box;transform-origin:center}.pd0{animation:pd0 8s linear infinite}.pd1{animation:pd1 8s linear infinite}.pd2{animation:pd2 8s linear infinite}.pd3{animation:pd3 8s linear infinite}.pd4{animation:pd4 8s linear infinite}.pd5{animation:pd5 8s cubic-bezier(.45,0,.25,1) infinite}.pd6{animation:pd6 8s cubic-bezier(.2,.6,.3,1) infinite}.pd7{animation:pd7 8s cubic-bezier(.45,0,.25,1) infinite}.pd8{animation:pd8 8s cubic-bezier(.2,.6,.3,1) infinite}.pd9{animation:pd9 8s cubic-bezier(.45,0,.25,1) infinite}.pda{animation:pda 8s cubic-bezier(.2,.6,.3,1) infinite}.pdb{animation:pdb 8s cubic-bezier(.45,0,.25,1) infinite}.pdc{animation:pdc 8s cubic-bezier(.2,.6,.3,1) infinite}.pdd{animation:pdd 8s cubic-bezier(.45,0,.25,1) infinite}.pde{animation:pde 8s cubic-bezier(.2,.6,.3,1) infinite}.pdf{animation:pdf 8s cubic-bezier(.45,0,.25,1) infinite}.pdg{animation:pdg 8s cubic-bezier(.2,.6,.3,1) infinite}.pdh{animation:pdh 8s cubic-bezier(.5,0,.4,1) infinite}.pdi{animation:pdi 8s cubic-bezier(.3,.7,.4,1) infinite}.pdj{animation:pdj 8s cubic-bezier(.3,.7,.4,1) infinite}.pdk{animation:pdk 8s cubic-bezier(.3,.7,.4,1) infinite}.pdl{animation:pdl 8s cubic-bezier(.3,.7,.4,1) infinite}.pdm{animation:pdm 8s cubic-bezier(.3,.7,.4,1) infinite}.pdn{animation:pdn 8s cubic-bezier(.3,.7,.4,1) infinite}
+@keyframes pd0{0%,7.5%{opacity:0;stroke-dashoffset:1}16.25%,90%{opacity:1;stroke-dashoffset:0}96.25%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes pd1{0%,20.62%{opacity:0;stroke-dashoffset:1}29.37%,90%{opacity:1;stroke-dashoffset:0}96.25%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes pd2{0%,33.75%{opacity:0;stroke-dashoffset:1}42.5%,90%{opacity:1;stroke-dashoffset:0}96.25%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes pd3{0%,46.87%{opacity:0;stroke-dashoffset:1}55.62%,90%{opacity:1;stroke-dashoffset:0}96.25%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes pd4{0%,60%{opacity:0;stroke-dashoffset:1}68.75%,90%{opacity:1;stroke-dashoffset:0}96.25%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes pd5{0%,71.87%{opacity:0;transform:translateY(-14px)}76.88%,90%{opacity:1;transform:none}96.25%,100%{opacity:0;transform:none}}
+@keyframes pd6{0%,3.75%{opacity:0;transform:scale(1)}4.25%{opacity:0.9;transform:scale(1)}13.75%{opacity:0;transform:scale(2.1)}14.13%,100%{opacity:0;transform:scale(1)}}
+@keyframes pd7{0%,3.12%{opacity:0}6.25%,90%{opacity:1}96.25%,100%{opacity:0}}
+@keyframes pd8{0%,16.25%{opacity:0;transform:scale(1)}16.75%{opacity:0.9;transform:scale(1)}26.25%{opacity:0;transform:scale(2.1)}26.62%,100%{opacity:0;transform:scale(1)}}
+@keyframes pd9{0%,15.62%{opacity:0}18.75%,90%{opacity:1}96.25%,100%{opacity:0}}
+@keyframes pda{0%,29.37%{opacity:0;transform:scale(1)}29.87%{opacity:0.9;transform:scale(1)}39.37%{opacity:0;transform:scale(2.1)}39.75%,100%{opacity:0;transform:scale(1)}}
+@keyframes pdb{0%,28.75%{opacity:0}31.87%,90%{opacity:1}96.25%,100%{opacity:0}}
+@keyframes pdc{0%,42.5%{opacity:0;transform:scale(1)}43%{opacity:0.9;transform:scale(1)}52.5%{opacity:0;transform:scale(2.1)}52.87%,100%{opacity:0;transform:scale(1)}}
+@keyframes pdd{0%,41.87%{opacity:0}45%,90%{opacity:1}96.25%,100%{opacity:0}}
+@keyframes pde{0%,55.62%{opacity:0;transform:scale(1)}56.12%{opacity:0.9;transform:scale(1)}65.62%{opacity:0;transform:scale(2.1)}66%,100%{opacity:0;transform:scale(1)}}
+@keyframes pdf{0%,55%{opacity:0}58.12%,90%{opacity:1}96.25%,100%{opacity:0}}
+@keyframes pdg{0%,68.75%{opacity:0;transform:scale(1)}69.25%{opacity:0.9;transform:scale(1)}78.75%{opacity:0;transform:scale(2.1)}79.12%,100%{opacity:0;transform:scale(1)}}
+@keyframes pdh{0%,3.75%{opacity:0;transform:translate(0px,0px) scale(0)}6.25%,7.5%{opacity:1;transform:translate(0px,0px) scale(1)}16.25%,20.62%{opacity:1;transform:translate(110.4px,0px) scale(1)}29.37%,33.75%{opacity:1;transform:translate(220.8px,0px) scale(1)}42.5%,46.87%{opacity:1;transform:translate(331.2px,0px) scale(1)}55.62%,60%{opacity:1;transform:translate(441.6px,0px) scale(1)}68.75%{opacity:1;transform:translate(552px,0px) scale(1)}72.5%,100%{opacity:0;transform:translate(552px,0px) scale(0)}}
+@keyframes pdi{0%,3.5%{transform:none}5.75%{transform:scale(1.22)}10.63%,100%{transform:none}}
+@keyframes pdj{0%,16%{transform:none}18.25%{transform:scale(1.22)}23.12%,100%{transform:none}}
+@keyframes pdk{0%,29.12%{transform:none}31.37%{transform:scale(1.22)}36.25%,100%{transform:none}}
+@keyframes pdl{0%,42.25%{transform:none}44.5%{transform:scale(1.22)}49.37%,100%{transform:none}}
+@keyframes pdm{0%,55.38%{transform:none}57.62%{transform:scale(1.22)}62.5%,100%{transform:none}}
+@keyframes pdn{0%,68.5%{transform:none}70.75%{transform:scale(1.22)}75.62%,100%{transform:none}}
+}
+/* institutions: jurisdiction evidence stream, loop 10s */
+@media (prefers-reduced-motion:no-preference){
+.js0,.js1,.js2,.js3,.js4,.js5,.js6,.js7,.js8,.js9,.jsa,.jsb,.jsc,.jsd,.jse,.jsf,.jsg,.jsh,.jsi,.jsj,.jsk,.jsl,.jsm,.jsn,.jso,.jsp,.jsq{transform-box:fill-box;transform-origin:center}.js0{animation:js0 10s ease-out infinite}.js1{animation:js1 10s linear infinite}.js2{animation:js2 10s ease-out infinite}.js3{animation:js3 10s linear infinite}.js4{animation:js4 10s ease-out infinite}.js5{animation:js5 10s linear infinite}.js6{animation:js6 10s cubic-bezier(.2,.6,.3,1) infinite}.js7{animation:js7 10s ease-in-out infinite}.js8{animation:js8 10s cubic-bezier(.45,0,.25,1) infinite}.js9{animation:js9 10s cubic-bezier(.45,0,.25,1) infinite}.jsa{animation:jsa 10s cubic-bezier(.45,0,.25,1) infinite}.jsb{animation:jsb 10s cubic-bezier(.45,0,.25,1) infinite}.jsc{animation:jsc 10s cubic-bezier(.45,0,.25,1) infinite}.jsd{animation:jsd 10s cubic-bezier(.2,.6,.3,1) infinite}.jse{animation:jse 10s cubic-bezier(.45,0,.25,1) infinite}.jsf{animation:jsf 10s cubic-bezier(.2,.6,.3,1) infinite}.jsg{animation:jsg 10s cubic-bezier(.45,0,.25,1) infinite}.jsh{animation:jsh 10s cubic-bezier(.2,.6,.3,1) infinite}.jsi{animation:jsi 10s cubic-bezier(.45,0,.25,1) infinite}.jsj{animation:jsj 10s cubic-bezier(.2,.6,.3,1) infinite}.jsk{animation:jsk 10s cubic-bezier(.45,0,.25,1) infinite}.jsl{animation:jsl 10s cubic-bezier(.2,.6,.3,1) infinite}.jsm{animation:jsm 10s cubic-bezier(.45,0,.25,1) infinite}.jsn{animation:jsn 10s linear infinite}.jso{animation:jso 10s cubic-bezier(.45,0,.25,1) infinite}.jsp{animation:jsp 10s cubic-bezier(.2,.6,.3,1) infinite}.jsq{animation:jsq 10s cubic-bezier(.45,0,.25,1) infinite}
+@keyframes js0{0%,2.5%{opacity:0}3.7%{opacity:1}10.7%,32.5%{opacity:0}33.7%{opacity:1}40.7%,100%{opacity:0}}
+@keyframes js1{0%,4%{opacity:0;transform:translate(0px,0px)}5.62%{opacity:1;transform:translate(20.52px,19.44px)}11.38%{opacity:1;transform:translate(93.48px,88.56px)}13%{opacity:0;transform:translate(114px,108px)}13.3%,34%{opacity:0;transform:translate(0px,0px)}35.62%{opacity:1;transform:translate(20.52px,19.44px)}41.38%{opacity:1;transform:translate(93.48px,88.56px)}43%{opacity:0;transform:translate(114px,108px)}43.3%,100%{opacity:0;transform:translate(0px,0px)}}
+@keyframes js2{0%,8.5%{opacity:0}9.7%{opacity:1}16.7%,38.5%{opacity:0}39.7%{opacity:1}46.7%,100%{opacity:0}}
+@keyframes js3{0%,10%{opacity:0;transform:translate(0px,0px)}11.62%{opacity:1;transform:translate(20.52px,4.68px)}17.38%{opacity:1;transform:translate(93.48px,21.32px)}19%{opacity:0;transform:translate(114px,26px)}19.3%,40%{opacity:0;transform:translate(0px,0px)}41.62%{opacity:1;transform:translate(20.52px,4.68px)}47.38%{opacity:1;transform:translate(93.48px,21.32px)}49%{opacity:0;transform:translate(114px,26px)}49.3%,100%{opacity:0;transform:translate(0px,0px)}}
+@keyframes js4{0%,14.5%{opacity:0}15.7%{opacity:1}22.7%,44.5%{opacity:0}45.7%{opacity:1}52.7%,100%{opacity:0}}
+@keyframes js5{0%,16%{opacity:0;transform:translate(0px,0px)}17.62%{opacity:1;transform:translate(20.52px,-10.08px)}23.38%{opacity:1;transform:translate(93.48px,-45.92px)}25%{opacity:0;transform:translate(114px,-56px)}25.3%,46%{opacity:0;transform:translate(0px,0px)}47.62%{opacity:1;transform:translate(20.52px,-10.08px)}53.38%{opacity:1;transform:translate(93.48px,-45.92px)}55%{opacity:0;transform:translate(114px,-56px)}55.3%,100%{opacity:0;transform:translate(0px,0px)}}
+@keyframes js6{0%,23%{opacity:0;transform:scale(1)}23.4%{opacity:0.8;transform:scale(1)}33%{opacity:0;transform:scale(1.55)}33.3%,54%{opacity:0;transform:scale(1)}54.4%{opacity:0.8;transform:scale(1)}64%{opacity:0;transform:scale(1.55)}64.3%,100%{opacity:0;transform:scale(1)}}
+@keyframes js7{0%{transform:translateY(0px)}25%{transform:translateY(-7px)}50%{transform:translateY(0px)}75%{transform:translateY(-7px)}100%{transform:translateY(0px)}}
+@keyframes js8{0%,45.5%{opacity:0}48%,91%{opacity:1}96%,100%{opacity:0}}
+@keyframes js9{0%,41%{opacity:0}43.5%,91%{opacity:1}96%,100%{opacity:0}}
+@keyframes jsa{0%,36.5%{opacity:0}39%,91%{opacity:1}96%,100%{opacity:0}}
+@keyframes jsb{0%,32%{opacity:0}34.5%,91%{opacity:1}96%,100%{opacity:0}}
+@keyframes jsc{0%,27.5%{opacity:0}30%,91%{opacity:1}96%,100%{opacity:0}}
+@keyframes jsd{0%,59%{opacity:0;transform:scale(1)}59.4%{opacity:0.9;transform:scale(1)}66%{opacity:0;transform:scale(2.3)}66.3%,100%{opacity:0;transform:scale(1)}}
+@keyframes jse{0%,28%{opacity:0;transform:scale(0)}31%,91%{opacity:1;transform:none}96%,100%{opacity:0;transform:none}}
+@keyframes jsf{0%,64%{opacity:0;transform:scale(1)}64.4%{opacity:0.9;transform:scale(1)}71%{opacity:0;transform:scale(2.3)}71.3%,100%{opacity:0;transform:scale(1)}}
+@keyframes jsg{0%,32.5%{opacity:0;transform:scale(0)}35.5%,91%{opacity:1;transform:none}96%,100%{opacity:0;transform:none}}
+@keyframes jsh{0%,69%{opacity:0;transform:scale(1)}69.4%{opacity:0.9;transform:scale(1)}76%{opacity:0;transform:scale(2.3)}76.3%,100%{opacity:0;transform:scale(1)}}
+@keyframes jsi{0%,37%{opacity:0;transform:scale(0)}40%,91%{opacity:1;transform:none}96%,100%{opacity:0;transform:none}}
+@keyframes jsj{0%,74%{opacity:0;transform:scale(1)}74.4%{opacity:0.9;transform:scale(1)}81%{opacity:0;transform:scale(2.3)}81.3%,100%{opacity:0;transform:scale(1)}}
+@keyframes jsk{0%,41.5%{opacity:0;transform:scale(0)}44.5%,91%{opacity:1;transform:none}96%,100%{opacity:0;transform:none}}
+@keyframes jsl{0%,79%{opacity:0;transform:scale(1)}79.4%{opacity:0.9;transform:scale(1)}86%{opacity:0;transform:scale(2.3)}86.3%,100%{opacity:0;transform:scale(1)}}
+@keyframes jsm{0%,46%{opacity:0;transform:scale(0)}49%,91%{opacity:1;transform:none}96%,100%{opacity:0;transform:none}}
+@keyframes jsn{0%,24.5%{opacity:0;transform:translate(0px,0px)}25.5%{opacity:1;transform:translate(0px,0px)}28%{opacity:1;transform:translate(20px,42px)}32.5%{opacity:1;transform:translate(54px,25px)}37%{opacity:1;transform:translate(88px,8px)}41.5%{opacity:1;transform:translate(122px,-9px)}46%{opacity:1;transform:translate(156px,-26px)}48%{opacity:0;transform:translate(156px,-26px)}48.5%,100%{opacity:0;transform:translate(0px,0px)}}
+@keyframes jso{0%,55.5%{opacity:0;transform:translate(0px,0px)}58.5%,59%{opacity:1;transform:translate(0px,0px)}64%{opacity:1;transform:translate(34px,-17px)}69%{opacity:1;transform:translate(68px,-34px)}74%{opacity:1;transform:translate(102px,-51px)}79%{opacity:1;transform:translate(136px,-68px)}82.5%{opacity:0;transform:translate(136px,-68px)}83%,100%{opacity:0;transform:translate(0px,0px)}}
+@keyframes jsp{0%,85.5%{opacity:0;transform:scale(1)}85.9%{opacity:0.9;transform:scale(1)}95.5%{opacity:0;transform:scale(2.4)}95.8%,100%{opacity:0;transform:scale(1)}}
+@keyframes jsq{0%,83%{opacity:0;transform:scale(0)}86.5%,91%{opacity:1;transform:none}96%,100%{opacity:0;transform:none}}
+}
 /* ==== LOOPS:END ==== */

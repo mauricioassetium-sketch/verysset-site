@@ -8,6 +8,8 @@ import twin
 import skyline
 import loopkit
 import mirror
+import pedigree
+import jurisdiction
 import os, re, io, json, html, hashlib
 import mapgen
 import i18n_cat
@@ -1247,9 +1249,12 @@ def build_institutions():
              "".join('<li lang="en" dir="ltr" data-noi18n>%s</li>' % a for a in AUDITORS) + '</ul>'
              '<p class="ia-cap">Every digital twin independently audited before delivery.</p>'
              '<p class="ia-note">Plus specialized firms per vertical. Mandatory by design.</p></div>')
-    b.append('<div class="ia-card rv" data-i="1"><span class="eb">Data pedigree</span>'
-             '<h3 class="t3">Six stages, from source to ledger.</h3><ol class="ia-ped">' +
-             "".join('<li><span class="ia-pn">%s</span><span class="ia-pt">%s</span></li>' % st for st in PEDIGREE) +
+    # looping data pedigree packet flow (pedigree.py): rail above the list, badges pulse in step
+    ped_svg, ped_badges = pedigree.build()
+    b.append('<div class="ia-card rv" data-i="1" data-loop><span class="eb">Data pedigree</span>'
+             '<h3 class="t3">Six stages, from source to ledger.</h3>' + ped_svg + '<ol class="ia-ped">' +
+             "".join('<li><span class="ia-pn %s">%s</span><span class="ia-pt">%s</span></li>' % (ped_badges[i], st[0], st[1])
+                     for i, st in enumerate(PEDIGREE)) +
              '</ol></div>')
     b.append('</div>')
 
@@ -1272,9 +1277,8 @@ def build_institutions():
              '<p class="lede">Continuous records, functional separation and reconstructable history are what let a regulated '
              'entity adopt a verification layer without inheriting a new counterparty risk.</p>'
              '<div class="mt2"><a class="tl" href="compliance.html">Read the compliance position <span class="ar">&rarr;</span></a></div></div>')
-    b.append('<div class="rv" data-i="1"><div class="jshot"><img src="assets/jurisdiction.webp" '
-             'alt="Jurisdictional alignment of the Verysset verification layer" style="display:block;width:100%;height:auto" '
-             'loading="lazy" decoding="async"></div></div>')
+    # looping evidence stream (jurisdiction.py), replaces the static jurisdiction.webp
+    b.append('<div class="rv" data-i="1">' + jurisdiction.figure() + '</div>')
     b.append('</div></div></section>')
 
     b.append(cta("Start a formal institutional evaluation.",

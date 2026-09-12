@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 8 72 72" width="72" height="72" role="img" aria-label="Verysset">
+  <title>Verysset</title>
+  <defs>
+    <linearGradient id="fTop" gradientUnits="userSpaceOnUse" x1="30" y1="14" x2="70" y2="46">
+      <stop offset="0" stop-color="#FFD400"/><stop offset="1" stop-color="#E6BF00"/>
+    </linearGradient>
+    <linearGradient id="fLeft" gradientUnits="userSpaceOnUse" x1="22" y1="30" x2="46" y2="76">
+      <stop offset="0" stop-color="#FFD400"/><stop offset="1" stop-color="#E6BF00"/>
+    </linearGradient>
+    <linearGradient id="fRight" gradientUnits="userSpaceOnUse" x1="52" y1="32" x2="74" y2="74">
+      <stop offset="0" stop-color="#FFD400"/><stop offset="1" stop-color="#E6BF00"/>
+    </linearGradient>
+  </defs>
+  <path d="M46 12 L74 28 L74 60 L46 76 L18 60 L18 28 Z" fill="#E6BF00"/>
+  <path d="M46 12 L74 28 L46 44 L18 28 Z" fill="url(#fTop)"/>
+  <path d="M18 28 L46 44 L46 76 L18 60 Z" fill="url(#fLeft)"/>
+  <path d="M18 28 L46 44 L46 76 L18 60 Z" fill="#000000" opacity="0.06"/>
+  <path d="M46 44 L74 28 L74 60 L46 76 Z" fill="url(#fRight)"/>
+  <path d="M46 44 L74 28 L74 60 L46 76 Z" fill="#000000" opacity="0.13"/>
+</svg>

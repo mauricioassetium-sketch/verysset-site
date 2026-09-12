@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+i18n_work/
+i18n_missing.json
+.DS_Store
+verysset-site.zip

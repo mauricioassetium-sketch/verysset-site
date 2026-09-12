@@ -699,4 +699,11 @@ CAT = {
     "actors-audit.a14d": {"es": "Actores y auditoría", "pt": "Intervenientes e auditoria", "zh": "参与方与审计", "ru": "Участники и аудит", "ar": "الأطراف والتدقيق"},
     "validation-and-audit.ed93": {"es": "Validación y auditoría", "pt": "Validação e auditoria", "zh": "验证与审计", "ru": "Валидация и аудит", "ar": "التحقق والتدقيق"},
     "validation-criteria-big-4-audited-digital-twin.811b": {"es": "Criterios de validación, gemelos digitales auditados por las Big 4 y la puntuación de confianza continua.", "pt": "Critérios de validação, gémeos digitais auditados pelas Big 4 e a pontuação de confiança contínua.", "zh": "验证标准、经四大审计的数字孪生，以及持续信任评分。", "ru": "Критерии валидации, цифровые двойники с аудитом «большой четвёрки» и непрерывный рейтинг доверия.", "ar": "معايير التحقق، وتوائم رقمية مُدقَّقة من الأربع الكبرى، ودرجة الثقة المستمرة."},
+    # satellite verification preloader (preloader.py, index only)
+    "trust-score.01c7": {"es": "PUNTUACIÓN DE CONFIANZA", "pt": "PONTUAÇÃO DE CONFIANÇA", "zh": "信任评分", "ru": "РЕЙТИНГ ДОВЕРИЯ", "ar": "درجة الثقة"},
+    "verified.2778": {"es": "VERIFICADO", "pt": "VERIFICADO", "zh": "已验证", "ru": "ПРОВЕРЕНО", "ar": "مُتحقق"},
+    "registered-on-dlt.3314": {"es": "REGISTRADO EN DLT", "pt": "REGISTADO EM DLT", "zh": "已登记于 DLT", "ru": "ЗАРЕГИСТРИРОВАНО В DLT", "ar": "مسجّل على DLT"},
+    "spatial.ca98": {"es": "ESPACIAL", "pt": "ESPACIAL", "zh": "空间", "ru": "ПРОСТРАНСТВО", "ar": "المكاني"},
+    "material.c740": {"es": "MATERIAL", "pt": "MATERIAL", "zh": "物质", "ru": "МАТЕРИАЛЫ", "ar": "المادي"},
+    "operations.8381": {"es": "OPERACIONES", "pt": "OPERAÇÕES", "zh": "运营", "ru": "ОПЕРАЦИИ", "ar": "العمليات"},
 }

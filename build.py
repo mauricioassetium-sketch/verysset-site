@@ -3,6 +3,7 @@
 # Emits one self-contained HTML file per nav item, all sharing assets/site.css + assets/site.js.
 # Rule: no em dash anywhere in the output. Hyphens only.
 
+import preloader
 import os, re, io, json, html, hashlib
 import mapgen
 import i18n_cat
@@ -546,6 +547,8 @@ FOOT = """</main>
 
 def page(fname, title, desc, body, prev=None, nxt=None, pgn=True, noindex=False):
     doc = head(title, desc, fname, noindex) + body
+    if fname == "index.html":          # satellite verification preloader, home only
+        doc = doc.replace("</head><body>", "</head><body>" + preloader.preloader(), 1)
     if pgn:
         doc += '<section class="sec tight">' + pgnav(prev, nxt) + '</section>'
     doc += (FOOT.replace('CONTACT_EMAIL_TOKEN', CONTACT_EMAIL).replace('DISCLAIMER_TOKEN', DISCLAIMER)

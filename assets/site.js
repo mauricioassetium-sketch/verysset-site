@@ -699,20 +699,106 @@
     for (var i = 0; i < langSubs.length; i++) { try { langSubs[i](code); } catch (e) { } }
   }
 
+  /* ---------- language menu: globe button + listbox of native names ----------
+     The button opens a listbox; focus moves onto the list and the keyboard highlight is
+     exposed with aria-activedescendant. ArrowUp/Down/Home/End move, Enter/Space choose,
+     Escape closes and returns focus to the globe, Tab closes. */
+  function langMenu() {
+    var btn = d.getElementById('langsel');
+    var box = btn && btn.parentNode;
+    var list = box && box.querySelector('[role=listbox]');
+    if (!btn || !list) return;
+    var opts = qa('[role=option]', list), cur = -1, isOpen = false;
+    function idx(code) {
+      for (var i = 0; i < opts.length; i++) { if (opts[i].getAttribute('data-lang') === code) return i; }
+      return 0;
+    }
+    function mark(code) {
+      opts.forEach(function (o) {
+        o.setAttribute('aria-selected', o.getAttribute('data-lang') === code ? 'true' : 'false');
+      });
+    }
+    function activate(i) {
+      cur = (i + opts.length) % opts.length;
+      opts.forEach(function (o, j) { o.classList.toggle('act', j === cur); });
+      list.setAttribute('aria-activedescendant', opts[cur].id);
+    }
+    /* keep the panel inside the viewport: measured from the trigger, not the transformed panel */
+    function place() {
+      var vw = d.documentElement.clientWidth || w.innerWidth, m = 8;
+      var br = btn.getBoundingClientRect(), wd = list.offsetWidth;
+      var left = d.documentElement.getAttribute('dir') === 'rtl' ? br.left : br.right - wd, shift = 0;
+      if (left < m) shift = m - left;
+      else if (left + wd > vw - m) shift = (vw - m) - (left + wd);
+      list.style.setProperty('--lx', Math.round(shift) + 'px');
+    }
+    function open(kbd) {
+      if (isOpen) return;
+      isOpen = true;
+      list.classList.toggle('kbd', !!kbd);
+      place();
+      box.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      activate(idx(LANG));
+      void list.offsetWidth;
+      try { list.focus({ preventScroll: true }); } catch (e) { list.focus(); }
+    }
+    function close(refocus) {
+      if (!isOpen) return;
+      isOpen = false;
+      box.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      list.removeAttribute('aria-activedescendant');
+      if (refocus) btn.focus();
+    }
+    function choose(i) {
+      var c = opts[i] && opts[i].getAttribute('data-lang');
+      close(true);
+      if (!c || c === LANG) return;
+      try { w.localStorage.setItem(LKEY, c); } catch (e) { }
+      applyLang(c);
+    }
+    mark(LANG);
+    onLang(mark);
+    btn.addEventListener('click', function (e) { if (isOpen) close(false); else open(e.detail === 0); });
+    btn.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(true); }
+    });
+    list.addEventListener('keydown', function (e) {
+      var k = e.key;
+      list.classList.add('kbd');
+      if (k === 'ArrowDown') { e.preventDefault(); activate(cur + 1); }
+      else if (k === 'ArrowUp') { e.preventDefault(); activate(cur - 1); }
+      else if (k === 'Home' || k === 'PageUp') { e.preventDefault(); activate(0); }
+      else if (k === 'End' || k === 'PageDown') { e.preventDefault(); activate(opts.length - 1); }
+      else if (k === 'Enter' || k === ' ' || k === 'Spacebar') { e.preventDefault(); choose(cur); }
+      else if (k === 'Escape' || k === 'Esc') { e.preventDefault(); e.stopPropagation(); close(true); }
+      else if (k === 'Tab') { close(true); }   /* default Tab then continues from the globe */
+    });
+    list.addEventListener('mousemove', function (e) {
+      list.classList.remove('kbd');
+      var o = e.target.closest && e.target.closest('[role=option]');
+      if (o && opts.indexOf(o) !== cur) activate(opts.indexOf(o));
+    });
+    list.addEventListener('click', function (e) {
+      var o = e.target.closest && e.target.closest('[role=option]');
+      if (o) choose(opts.indexOf(o));
+    });
+    list.addEventListener('focusout', function (e) {
+      if (isOpen && !(e.relatedTarget && box.contains(e.relatedTarget))) close(false);
+    });
+    d.addEventListener('pointerdown', function (e) {
+      if (isOpen && !box.contains(e.target)) close(false);
+    });
+    w.addEventListener('resize', function () { if (isOpen) place(); }, { passive: true });
+  }
+
   (function () {
     var saved = 'en';
     try { saved = w.localStorage.getItem(LKEY) || 'en'; } catch (e) { }
     if (I18N_LANGS.indexOf(saved) < 0) saved = 'en';
-    var sel = d.getElementById('langsel');
-    if (sel) {
-      sel.value = saved;
-      sel.addEventListener('change', function () {
-        var c = sel.value;
-        try { w.localStorage.setItem(LKEY, c); } catch (e) { }
-        applyLang(c);
-      });
-    }
     applyLang(saved);
+    langMenu();
   })();
 
   /* ---------- single rAF-throttled scroll bus ---------- */

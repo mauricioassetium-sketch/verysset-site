@@ -370,15 +370,27 @@ LANGS = [("en", "English"), ("es", "Espa\u00f1ol"), ("pt", "Portugu\u00eas"),
 
 
 def lang_select():
-    """Language control: one planet mark, no visible label. A native <select> sits
-       transparently on top of it, so the control opens with a click, a tap or the
-       keyboard and reads correctly to a screen reader with zero JavaScript."""
-    opts = "".join('<option value="%s">%s</option>' % (c, n) for c, n in LANGS)
+    """Language control: an icon only globe button that opens a light listbox of the six
+       languages, each written in its own script. The names are fixed native names and are
+       never translated (data-noi18n), so every reader can find their own language.
+       Open state, keyboard support and aria state are wired in assets/site.js (langMenu)."""
+    check = ('<svg class="lck" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" '
+             'focusable="false"><path d="M3.4 8.6 6.5 11.6 12.6 4.6"/></svg>')
+    opts = "".join('<li role="option" id="lopt-%s" data-lang="%s" lang="%s" aria-selected="%s">%s'
+                   '<span class="lnm"%s>%s</span></li>'
+                   % (c, c, c, "true" if c == "en" else "false", check,
+                      ' dir="rtl"' if c == "ar" else "", n)
+                   for c, n in LANGS)
     return ('<div class="lang" data-noi18n>'
+            '<button type="button" id="langsel" class="lbtn" title="Language" aria-label="Language" '
+            'aria-haspopup="listbox" aria-expanded="false" aria-controls="langlist">'
             '<svg class="lgi" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" '
             'focusable="false"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M3.3 9.8h17.4'
             'M3.3 14.2h17.4M12 3c2.6 2.6 2.6 15.4 0 18-2.6-2.6-2.6-15.4 0-18"/></svg>'
-            '<select id="langsel" class="lsel" title="Language" aria-label="Language">%s</select>'
+            '<svg class="lchev" viewBox="0 0 8 5" width="7" height="5" aria-hidden="true" '
+            'focusable="false"><path d="M1 1.1 4 3.9 7 1.1"/></svg>'
+            '</button>'
+            '<ul class="lmenu" id="langlist" role="listbox" aria-label="Language" tabindex="-1">%s</ul>'
             '</div>') % opts
 
 

@@ -134,26 +134,76 @@ h2.t{font-weight:600;letter-spacing:-.03em}
 .nmenu a:hover::after,.nmenu a.cur::after{right:0}
 .nmenu a.cur{color:#0A0A09;font-weight:700;letter-spacing:-.005em}
 .nact{flex:none;display:flex;align-items:center;gap:12px}
-/* ---------- language control: one planet mark, no visible label ----------
-   A native <select> is stretched transparently over the globe so the control opens on
-   click, tap or keyboard and announces itself to a screen reader, with no popover code. */
-.lang{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;
-  width:38px;height:38px;border:1px solid var(--line2);border-radius:var(--r);
-  transition:border-color .2s,background .2s}
-.lang:hover{border-color:var(--ink);background:var(--yl-w)}
-.lang:focus-within{border-color:var(--ink);box-shadow:0 0 0 3px var(--yl-w)}
-.lang .lgi{width:18px;height:18px;pointer-events:none;fill:none;stroke:var(--muted);
+/* ---------- language control: icon only globe + native name listbox ----------
+   The trigger is a real <button> (aria-haspopup=listbox). The panel is a light floating
+   list of the six languages in their own scripts, checkmark on the active one. Positioned
+   under the globe, right aligned (left aligned in RTL), nudged by site.js via --lx so it
+   never leaves the viewport, down to 320px wide screens. */
+.lang{position:relative;display:inline-flex;flex:none}
+.lbtn{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;margin:0;padding:0;border:1px solid var(--line2);border-radius:var(--r);
+  background:transparent;color:var(--muted);font:inherit;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:border-color .2s,background .2s,box-shadow .2s,color .2s}
+.lbtn:hover{border-color:var(--ink);background:var(--yl-w);color:var(--ink);
+  box-shadow:0 0 0 3px rgba(255,212,0,.38),0 0 14px rgba(255,212,0,.35)}
+.lbtn[aria-expanded=true]{border-color:var(--ink);background:var(--yl-w);color:var(--ink);
+  box-shadow:0 0 0 3px rgba(255,212,0,.5)}
+.lbtn:focus{outline:none}
+.lbtn:focus-visible{border-color:var(--ink);color:var(--ink);
+  box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink),0 0 0 7px rgba(255,212,0,.6)}
+.lbtn .lgi{width:18px;height:18px;pointer-events:none;fill:none;stroke:currentColor;
   stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;
-  transition:stroke .2s,transform .6s cubic-bezier(.2,.7,.2,1)}
-.lang:hover .lgi{stroke:var(--ink);transform:rotate(20deg)}
+  transition:transform .6s cubic-bezier(.2,.7,.2,1)}
+.lbtn:hover .lgi{transform:rotate(20deg)}
+/* tiny integrated chevron hint, bottom corner of the globe box */
+.lbtn .lchev{position:absolute;right:3px;bottom:4px;width:7px;height:5px;pointer-events:none;
+  fill:none;stroke:var(--faint);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .18s,stroke .2s}
+.lbtn:hover .lchev,.lbtn[aria-expanded=true] .lchev{stroke:var(--ink)}
+.lbtn[aria-expanded=true] .lchev{transform:rotate(180deg)}
 /* a non English locale lights the mark, so the active choice is legible without a label */
-html:not([lang=en]) .lang .lgi{stroke:var(--ink)}
-html:not([lang=en]) .lang::after{content:"";position:absolute;top:5px;right:5px;width:5px;height:5px;
+html:not([lang=en]) .lbtn{color:var(--ink)}
+html:not([lang=en]) .lbtn::after{content:"";position:absolute;top:5px;right:5px;width:5px;height:5px;
   border-radius:50%;background:var(--yl);box-shadow:0 0 0 2px #fff}
-.lsel{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;
-  appearance:none;-webkit-appearance:none;background:transparent;font-size:16px;color:transparent}
-.lsel option{font-family:var(--sans);font-size:14px;letter-spacing:0;color:var(--ink);background:#fff}
-@media(max-width:520px){.lang{width:34px;height:34px}.lang .lgi{width:16px;height:16px}}
+[dir=rtl] .lbtn .lchev{right:auto;left:3px}
+html[dir=rtl]:not([lang=en]) .lbtn::after{right:auto;left:5px}
+.lmenu{position:absolute;top:calc(100% + 8px);right:0;left:auto;z-index:130;
+  margin:0;padding:5px;list-style:none;min-width:178px;max-width:calc(100vw - 16px);
+  background:#F7F7F5;border:1px solid rgba(17,17,19,.07);border-radius:11px;
+  box-shadow:0 4px 16px rgba(17,17,19,.12),0 1px 3px rgba(17,17,19,.06);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translate3d(var(--lx,0px),-6px,0) scale(.97);transform-origin:top right;
+  transition:opacity .16s ease,transform .18s cubic-bezier(.2,.7,.2,1),visibility 0s linear .18s}
+.lang.open .lmenu{opacity:1;visibility:visible;pointer-events:auto;
+  transform:translate3d(var(--lx,0px),0,0) scale(1);
+  transition:opacity .16s ease,transform .18s cubic-bezier(.2,.7,.2,1),visibility 0s}
+[dir=rtl] .lmenu{right:auto;left:0;transform-origin:top left}
+.lmenu:focus{outline:none}
+.lmenu li{display:flex;align-items:center;gap:10px;min-height:36px;margin:0;padding:0 16px 0 10px;
+  border-radius:7px;cursor:pointer;user-select:none;-webkit-user-select:none;white-space:nowrap;
+  font-family:var(--sans);font-size:14px;font-weight:450;line-height:1.2;letter-spacing:0;
+  text-transform:none;color:#1a1a18;transition:background .12s,box-shadow .12s}
+[dir=rtl] .lmenu li{padding:0 10px 0 16px}
+.lmenu li:lang(zh){font-family:"Inter Variable","PingFang SC","Hiragino Sans GB","Microsoft YaHei",
+  "Noto Sans CJK SC","Source Han Sans SC",system-ui,sans-serif}
+.lmenu li:lang(ar){font-family:"Inter Variable","SF Arabic","Geeza Pro","Noto Naskh Arabic",
+  "Noto Sans Arabic","Segoe UI",system-ui,sans-serif;font-size:14.5px}
+.lmenu .lck{flex:none;width:13px;height:13px;fill:none;stroke:#1a1a18;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;visibility:hidden}
+.lmenu li[aria-selected=true]{font-weight:600;color:#0A0A09}
+.lmenu li[aria-selected=true] .lck{visibility:visible}
+/* mouse: tint follows the pointer only. keyboard (.kbd, set by site.js): tint + ink ring on
+   the active option. A mouse open therefore shows just the checkmark, like a native menu. */
+@media(hover:hover){.lmenu li:hover{background:rgba(255,212,0,.17)}
+  .lmenu li[aria-selected=true]:hover{background:rgba(17,17,19,.05)}}
+.lmenu.kbd li.act{background:rgba(255,212,0,.17);box-shadow:inset 0 0 0 1.5px rgba(17,17,19,.6)}
+.lmenu.kbd li[aria-selected=true].act{background:rgba(17,17,19,.05)}
+@media(max-width:520px){.lbtn{width:34px;height:34px}.lbtn .lgi{width:16px;height:16px}
+  .lbtn .lchev{right:2px;bottom:3px}.lmenu li{min-height:38px}}
+@media(prefers-reduced-motion:reduce){
+  .lmenu,.lang.open .lmenu{transition:none;transform:translate3d(var(--lx,0px),0,0)}
+  .lbtn .lgi,.lbtn .lchev{transition:none}.lbtn:hover .lgi{transform:none}}
 
 /* ---------- right to left (Arabic) ----------
    The document flips as a whole. Technical consoles, diagrams and logo walls stay left to

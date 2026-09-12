@@ -6,6 +6,7 @@
 import os, re, io, json, html, hashlib
 import mapgen
 import i18n_cat
+import logogen
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 
@@ -26,8 +27,16 @@ NAVBAR = NAV[1:9]   # links shown in the desktop bar (Contact is the CTA, Home i
 # The one public contact address. Used on the contact page, in the footer and by the form.
 CONTACT_EMAIL = "info@verysset.com"
 
-# Favicon = the new Verysset cube mark (vector, crisp at 16px).
-FAVICON = "assets/favicon.svg"
+# Identity: logogen.py regenerates the flat square mark, both lockups and the favicon from one grid on
+# every build, and returns the lockup metrics used to size the header and footer <img> tags.
+LOGO = logogen.main(quiet=True)
+# Favicon = the flat square symbol (vector, crisp at 16px). ?v=2 retires the old cube from browser caches.
+FAVICON = "assets/favicon.svg?v=2"
+
+
+def logo_img(src, h):
+    return ('<img class="blogo" src="%s" alt="Verysset" width="%d" height="%d" decoding="async">'
+            % (src, round(h * LOGO["lockup_w"] / LOGO["lockup_h"]), h))
 
 # ---------------------------------------------------------------- i18n machinery
 # Strategy: build-side auto-extraction. Every visible text node in the generated HTML
@@ -342,17 +351,17 @@ def pill(txt):
 
 
 # ---------------------------------------------------------------- shell
-def head(title, desc, page):
+def head(title, desc, page, noindex=False):
     return """<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>%s</title>
 <meta name="description" content="%s">
-<meta name="theme-color" content="#ffffff">
+%s<meta name="theme-color" content="#ffffff">
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="%s">
+<link rel="icon" type="image/svg+xml" href="%s">
 <link rel="preload" href="assets/fonts/ClashDisplay-Medium.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="assets/fonts/ClashDisplay-Semibold.otf" as="font" type="font/otf" crossorigin>
 <link rel="preload" href="assets/fonts/Inter-Variable.ttf" as="font" type="font/ttf" crossorigin>
@@ -361,7 +370,8 @@ def head(title, desc, page):
 <a class="skip" href="#main">Skip to content</a>
 <div class="pbar" aria-hidden="true"></div>
 %s
-<main id="main">""" % (title, desc, title, desc, FAVICON, navbar(page))
+<main id="main">""" % (title, desc, '<meta name="robots" content="noindex,nofollow">\n' if noindex else "",
+       title, desc, FAVICON, navbar(page))
 
 
 LANGS = [("en", "English"), ("es", "Espa\u00f1ol"), ("pt", "Portugu\u00eas"),
@@ -402,11 +412,11 @@ def navbar(page):
                      % (h, ' class="cur" aria-current="page"' if h == page else "", t)
                      for h, t in NAV)
     return """<header class="nav" id="nav"><div class="nrow">
-<a class="brand" href="index.html" aria-label="Verysset home"><img class="blogo" src="assets/verysset-logo.svg" alt="Verysset" width="178" height="42" decoding="async"></a>
+<a class="brand" href="index.html" aria-label="Verysset home">%s</a>
 <nav class="nmenu" aria-label="Primary">%s</nav>
 <div class="nact">%s<a class="btn sm" href="contact.html">Request a meeting</a>
 <button class="burg" id="burg" aria-label="Menu" aria-expanded="false" aria-controls="drawer"><span></span></button></div>
-</div><div class="drawer" id="drawer">%s<a class="btn" href="contact.html">Request a meeting</a></div></header>""" % (links, lang_select(), dlinks)
+</div><div class="drawer" id="drawer">%s<a class="btn" href="contact.html">Request a meeting</a></div></header>""" % (logo_img("assets/logo.svg", 32), links, lang_select(), dlinks)
 
 
 def pgnav(prev, nxt):
@@ -498,7 +508,7 @@ DISCLAIMER = (
 
 FOOT = """</main>
 <footer><div class="wrap">
-<a class="brand" href="index.html" aria-label="Verysset home"><img class="blogo" src="assets/verysset-logo-dark.svg" alt="Verysset" width="203" height="48" decoding="async"></a>
+<a class="brand" href="index.html" aria-label="Verysset home">LOGO_DARK_TOKEN</a>
 <div class="fgrid"><div>
 <p>Verysset is a sovereign infrastructure for the continuous verification of real world assets.</p>
 <p class="ents">Verysset Veritas Ledger Ltd. (Dubai, DIFC)</p>
@@ -516,13 +526,14 @@ FOOT = """</main>
 </body></html>"""
 
 
-def page(fname, title, desc, body, prev=None, nxt=None, pgn=True):
-    doc = head(title, desc, fname) + body
+def page(fname, title, desc, body, prev=None, nxt=None, pgn=True, noindex=False):
+    doc = head(title, desc, fname, noindex) + body
     if pgn:
         doc += '<section class="sec tight">' + pgnav(prev, nxt) + '</section>'
     doc += (FOOT.replace('CONTACT_EMAIL_TOKEN', CONTACT_EMAIL).replace('DISCLAIMER_TOKEN', DISCLAIMER)
             .replace('BADGE_INTEROP', BADGE_ICONS['interop']).replace('BADGE_LOCK', BADGE_ICONS['lock'])
-            .replace('BADGE_CONT', BADGE_ICONS['cont']))
+            .replace('BADGE_CONT', BADGE_ICONS['cont'])
+            .replace('LOGO_DARK_TOKEN', logo_img("assets/logo-dark.svg", 44)))
     doc = i18nize(doc, fname)
     with open(os.path.join(OUT, fname), "w", encoding="utf-8") as f:
         f.write(doc)
@@ -993,7 +1004,12 @@ def build_index():
     ]):
         b.append('<a class="kcard rv" data-i="%d" href="%s"><span class="kn">%s</span><h3>%s</h3><p>%s</p>'
                  '<span class="go">Open <span>&rarr;</span></span></a>' % (i % 3, href, kn, t, p))
-    b.append('</div></div></section>')
+    b.append('</div>')
+    # ARADINA Technology credit: sits in the LAST gray box of the home page (this Explore band, #f8f8f8).
+    # Proper noun, so data-noi18n keeps it static in every locale. Black ink on gray, external link.
+    b.append('<div class="aradina" data-noi18n><a href="https://aradina.net" target="_blank" rel="noopener">'
+             'ARADINA Technology</a></div>')
+    b.append('</div></section>')
 
     b.append(cta("Operate real world assets under continuous verification.",
                  "If your institution needs to operate real world assets under continuous verification and clear trust metrics, "
@@ -1448,6 +1464,183 @@ def build_contact():
                 "".join(b), prev=("partners.html", "Partners"), nxt=("index.html", "Home"))
 
 
+# ---------------------------------------------------------------- logo review page
+# logo.html is the design review page for the identity. It is built with the same head, header,
+# footer and i18n wiring as every other page, but it is deliberately NOT in NAV and is noindex.
+def _svg_paths(rel):
+    return re.findall(r"<path [^>]*/>", open(os.path.join(OUT, rel), encoding="utf-8").read())
+
+
+def build_logo():
+    lw, lh = LOGO["lockup_w"], LOGO["lockup_h"]
+    fm = logogen.fmt
+
+    def lock(src, h, alt, cls=""):
+        return ('<img%s src="%s" alt="%s" width="%d" height="%d" decoding="async">'
+                % (' class="%s"' % cls if cls else "", src, alt, round(h * lw / lh), h))
+
+    def sym(src, s, alt="VERYSSET symbol"):
+        return '<img src="%s" alt="%s" width="%d" height="%d" decoding="async">' % (src, alt, s, s)
+
+    def hd(n, eb, h2, p):
+        return ('<div class="lghd"><div><span class="eb">%s</span><h2>%s</h2></div><p>%s</p></div>'
+                % (eb, h2, p))
+
+    b = [phead("Brand identity", "Design review", "The VERYSSET mark.",
+               "A flat yellow square and a tracked black wordmark, faithful to the original model. One corner "
+               "of the square is set apart as an exact unit: the verified token carved from the real asset. "
+               "The lower edge of that cut is the cap line of the name, so symbol and wordmark share one geometry.",
+               '<div class="lgmeta"><span class="lgtag y">Design review</span>'
+               '<span class="lgtag">Not in public navigation</span>'
+               '<span class="lgtag">Flat, four colors</span></div>')]
+
+    # 01 primary lockup
+    b.append('<section class="sec tight"><div class="wrap">' +
+             hd("01", "01 Primary lockup", "Square, unit, wordmark. Nothing else.",
+                "The primary mark for every light surface. Solid yellow square, ink wordmark, no gradient, "
+                "no stroke, no effect.") +
+             '<figure class="lgplate">' + lock("assets/logo.svg", 120, "VERYSSET primary logo on white", "lgbig") +
+             '<figcaption><span>Primary, on white</span><span data-noi18n>assets/logo.svg</span></figcaption></figure>'
+             '<figure class="lgplate dk">' + lock("assets/logo-dark.svg", 120, "VERYSSET logo reversed on ink", "lgbig") +
+             '<figcaption><span>Reversed, on ink</span><span data-noi18n>assets/logo-dark.svg</span></figcaption></figure>'
+             '</div></section>')
+
+    # 02 size ladder
+    def ladder(src, dk):
+        rows = "".join('<div class="lgrow"><b data-noi18n>%d px</b>%s</div>'
+                       % (s, lock(src, s, "VERYSSET logo at %d pixels" % s)) for s in (24, 48, 96))
+        return '<div class="lgcol%s">%s</div>' % (" dk" if dk else "", rows)
+
+    b.append('<section class="sec tight alt"><div class="wrap">' +
+             hd("02", "02 Size ladder", "Holds its shape from 24 to 240 pixels.",
+                "The channel stays open and the unit stays legible at header size. At 240 pixels the cut "
+                "becomes the signature.") +
+             '<div class="lgladder">' + ladder("assets/logo.svg", False) + ladder("assets/logo-dark.svg", True) +
+             '</div><div class="lgcrops">'
+             '<figure class="lgcrop">' + lock("assets/logo.svg", 240, "VERYSSET logo at 240 pixels, detail") +
+             '<figcaption><span data-noi18n>240 px</span><span>Detail crop</span></figcaption></figure>'
+             '<figure class="lgcrop dk">' + lock("assets/logo-dark.svg", 240, "VERYSSET reversed logo at 240 pixels, detail") +
+             '<figcaption><span data-noi18n>240 px</span><span>Detail crop</span></figcaption></figure>'
+             '</div></div></section>')
+
+    # 03 symbol and favicon
+    def symrow(dk):
+        cells = "".join('<figure>%s<figcaption data-noi18n>%d</figcaption></figure>'
+                        % (sym("assets/logo-symbol.svg", s), s) for s in (96, 48, 24, 16))
+        return '<div class="lgsrow%s">%s</div>' % (" dk" if dk else "", cells)
+
+    def tab(dk):
+        return ('<div class="lgtabbar%s"><div class="lgtab"><img src="%s" alt="" width="16" height="16">'
+                '<span>VERYSSET | Continuous verification</span><i aria-hidden="true"></i></div></div>'
+                % (" dk" if dk else "", FAVICON))
+
+    b.append('<section class="sec tight"><div class="wrap">' +
+             hd("03", "03 Symbol and favicon", "The square alone, down to 16 pixels.",
+                "For favicon, app icon and avatar. A square viewBox with no padding, so the mark fills its "
+                "tile edge to edge.") +
+             '<div class="lgsym"><figure class="lgplate lgsq">' + sym("assets/logo-symbol.svg", 240) +
+             '<figcaption><span>Symbol, 240 px</span><span data-noi18n>assets/logo-symbol.svg</span></figcaption></figure>'
+             '<div class="lgsyms">' + symrow(False) + symrow(True) +
+             '<div class="lgtabs"><span class="lgcap">Current favicon, as the browser tab shows it</span>' +
+             tab(False) + tab(True) + '</div></div></div></div></section>')
+
+    # 04 construction
+    W = lw
+    ps = _svg_paths("assets/logo-dark.svg")
+    g = [ps[0], ps[1].replace('fill="#FFFFFF"', 'fill="#FFFFFF" opacity=".92"')]
+    g.append('<rect class="cs" x="96" y="-8" width="32" height="112"/>')
+    for x in (0, 56, 64, 96, 128):
+        g.append('<line class="gl" x1="%d" y1="-30" x2="%d" y2="124"/>' % (x, x))
+    for y, lab, key in ((0, "TOP  0u", False), (40, "CAP LINE  40u", True), (96, "BASELINE  96u", False)):
+        g.append('<line class="gl%s" x1="-40" y1="%d" x2="%s" y2="%d"/>' % (" key" if key else "", y, fm(W + 22), y))
+        g.append('<text x="%s" y="%s"%s>%s</text>' % (fm(W + 30), fm(y + 2.8), ' class="k"' if key else "", lab))
+    # dimensions
+    g.append('<path class="dm" d="M-20 0V96M-24 0H-16M-24 96H-16"/>')
+    g.append('<text x="-30" y="48" text-anchor="middle" transform="rotate(-90 -30 48)">96u</text>')
+    g.append('<path class="dm" d="M64 -14H96M64 -18V-10M96 -18V-10"/>')
+    g.append('<text x="80" y="-21" text-anchor="middle">32u</text>')
+    g.append('<path class="dm" d="M60 -26V-6"/>')
+    g.append('<text x="60" y="-31" text-anchor="middle">8u</text>')
+    g.append('<path class="dm" d="M96 112H128M96 108V116M128 108V116"/>')
+    g.append('<text x="112" y="128" text-anchor="middle">32u CLEAR SPACE</text>')
+    g.append('<path class="dm" d="M%s 40V96M%s 40H%sM%s 96H%s"/>'
+             % (fm(W + 12), fm(W + 8), fm(W + 16), fm(W + 8), fm(W + 16)))
+    g.append('<text x="%s" y="72" class="m">56u CAP HEIGHT</text>' % fm(W + 30))
+    vb = "-64 -50 %s 192" % fm(W + 64 + 200)
+    rules = [("96u", "Square", "The real asset. Solid Verysset yellow, flat, no stroke, no gradient."),
+             ("32u", "Token unit", "Exactly one third of the side, set apart in the top right corner."),
+             ("8u", "Channel", "The negative space that frees the unit. Transparent, so it reads on any ground."),
+             ("40u", "Cap line", "The lower edge of the channel. Every capital of the wordmark stops on it."),
+             ("32u", "Clear space", "One unit between symbol and name, and the minimum margin around the lockup.")]
+    b.append('<section class="sec ink-band"><div class="wrap">' +
+             hd("04", "04 Construction", "One unit grid carries the whole mark.",
+                "Everything lands on an 8 unit rhythm. The cut is not decoration: it is the line the wordmark "
+                "stands under.") +
+             '<figure class="lgcon"><svg viewBox="%s" role="img" aria-label="Construction grid of the VERYSSET logo" '
+             'data-noi18n>%s</svg></figure>' % (vb, "".join(g)) +
+             '<ul class="lgrules">' +
+             "".join('<li><b data-noi18n>%s</b><h3>%s</h3><p>%s</p></li>' % r for r in rules) +
+             '</ul></div></section>')
+
+    # 05 color
+    sw = [("#FFD400", "Verysset yellow", "The square and its unit. Never tinted, never gold."),
+          ("#E6BF00", "Deep yellow", "Hover states and fine keylines. Never the mark itself."),
+          ("#0A0A09", "Ink", "The wordmark on white and light grounds."),
+          ("#FFFFFF", "White", "The wordmark on ink and dark imagery.")]
+    b.append('<section class="sec tight alt"><div class="wrap">' +
+             hd("05", "05 Color", "Four values. No gold, no gradient.",
+                "The square is always #FFD400 on every ground, so the brand never shifts between light and dark.") +
+             '<div class="lgswg">' +
+             "".join('<div class="lgsw"><i style="background:%s"></i><div><b>%s</b><code data-noi18n>%s</code>'
+                     '<p>%s</p></div></div>' % (h, n, h, u) for h, n, u in sw) +
+             '</div></div></section>')
+
+    # 06 optional sparkle
+    def sparkle(dk):
+        p2 = _svg_paths("assets/logo-dark.svg" if dk else "assets/logo.svg")
+        gid = "lgspk" + ("d" if dk else "l")
+        return ('<svg class="lgbig" viewBox="0 0 %s %s" role="img" aria-label="Optional sparkle variant of the '
+                'VERYSSET logo"><defs><linearGradient id="%s" x1="0" y1="0" x2="1" y2="1">'
+                '<stop offset="0" stop-color="#FFD400"/><stop offset="1" stop-color="#E6BF00"/></linearGradient>'
+                '</defs>%s%s</svg>' % (fm(lw), fm(lh), gid,
+                                       p2[0].replace('fill="#FFD400"', 'fill="url(#%s)"' % gid), p2[1]))
+
+    b.append('<section class="sec tight"><div class="wrap">' +
+             hd("06", "06 Optional sparkle variant", "A single yellow ramp, for motion and events only.",
+                "<b>Optional. Not the primary mark.</b> A subtle deep yellow ramp across the square, for animated "
+                "intros and stage screens. Every file on this page stays flat.") +
+             '<div class="lgpair"><figure class="lgplate">' + sparkle(False) +
+             '<figcaption><span>Optional sparkle, on white</span><span class="lgtag">Optional</span></figcaption></figure>'
+             '<figure class="lgplate dk">' + sparkle(True) +
+             '<figcaption><span>Optional sparkle, on ink</span><span class="lgtag">Optional</span></figcaption></figure>'
+             '</div></div></section>')
+
+    # 07 files
+    files = [("assets/logo.svg", "Primary lockup", "Light grounds. Yellow square with the ink wordmark."),
+             ("assets/logo-dark.svg", "Reversed lockup", "Dark grounds. Yellow square with the white wordmark."),
+             ("assets/logo-symbol.svg", "Symbol", "Square viewBox. App icon, avatar and social profile."),
+             ("assets/favicon.svg", "Favicon", "The symbol, wired as the favicon on every page.")]
+    rows = []
+    for f, n, d in files:
+        prev = sym(f, 40, "") if ("symbol" in f or "favicon" in f) else lock(f, 24, "")
+        rows.append('<li><span class="lgfi%s">%s</span><div><b>%s</b><p>%s</p></div>'
+                    '<code data-noi18n>%s &middot; %.1f KB</code><a class="btn gh sm" href="%s" download>Download</a></li>'
+                    % (" dk" if "dark" in f else "", prev, n, d, f,
+                       os.path.getsize(os.path.join(OUT, f)) / 1024.0, f))
+    b.append('<section class="sec tight alt"><div class="wrap">' +
+             hd("07", "07 Files", "Self contained vectors, no fonts required.",
+                "The wordmark is drawn as outlines, so every file renders the same in any browser, deck or tool.") +
+             '<ul class="lgfiles">' + "".join(rows) + '</ul>'
+             '<p class="lgnote">Wordmark: Clash Display Semibold, converted to outlines, tracked wide and spaced '
+             'optically pair by pair. Every file is generated by one script, <code data-noi18n>logogen.py</code>, '
+             'so the grid is exact in every export.</p>'
+             '</div></section>')
+
+    return page("logo.html", "Logo review | Verysset",
+                "Design review of the VERYSSET identity: primary lockup, reversed lockup, symbol, favicon and construction.",
+                "".join(b), pgn=False, noindex=True)
+
+
 if __name__ == "__main__":
     sizes = {}
     sizes["index.html"] = build_index()
@@ -1460,6 +1653,7 @@ if __name__ == "__main__":
     sizes["faq.html"] = build_faq()
     sizes["partners.html"] = build_partners()
     sizes["contact.html"] = build_contact()
+    sizes["logo.html"] = build_logo()        # design review page: built, but NOT in NAV
     for k in sorted(sizes):
         print("%-22s %7.1f KB" % (k, sizes[k] / 1024.0))
     total, full, miss = i18n_report()

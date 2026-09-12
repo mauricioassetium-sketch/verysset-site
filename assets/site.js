@@ -339,7 +339,6 @@
     "linking.4f09":["Linking","Vinculación","Ligação","关联","Связывание","الربط"],
     "lithium-water.0d47":["Lithium & Water","Litio y agua","Lítio e água","锂与水资源","Литий и вода","الليثيوم والمياه"],
     "live-integrity-for-generation-transmission-and.0b4f":["Live integrity for generation, transmission and infrastructure assets.","Integridad en vivo para activos de generación, transmisión e infraestructura.","Integridade em tempo real para ativos de geração, transmissão e infraestrutura.","为发电、输电及基础设施资产提供实时完整性。","Целостность в реальном времени для активов генерации, передачи и инфраструктуры.","سلامة مباشرة لأصول التوليد والنقل والبنية التحتية."],
-    "live-trust-score.5b8b":["Live trust score","Puntuación de confianza en vivo","Pontuação de confiança em tempo real","实时信任评分","Живой рейтинг доверия","درجة الثقة الحية"],
     "live.955a":["Live","En vivo","Em direto","实时","Онлайн","مباشر"],
     "location-and-perimeter-events.67ef":["Location and perimeter events","Eventos de ubicación y perímetro","Eventos de localização e perímetro","位置与周界事件","События местоположения и периметра","أحداث الموقع والمحيط"],
     "locking.195c":["Locking","Bloqueo","Bloqueio","锁定","Блокировка","القفل"],
@@ -380,7 +379,6 @@
     "name-institution-com.abd7":["name@institution.com","name@institution.com","name@institution.com","name@institution.com","name@institution.com","name@institution.com"],
     "native-message-format-for-global-banking-rails.a10c":["Native message format for global banking rails.","Formato de mensajería nativo para las redes bancarias globales.","Formato de mensagens nativo para as redes bancárias globais.","面向全球银行通道的原生报文格式。","Нативный формат сообщений для глобальных банковских систем.","صيغة رسائل أصلية لشبكات المصارف العالمية."],
     "ndc.0534":["NDC","NDC","NDC","NDC","NDC","NDC"],
-    "network-wide-asset-trust-index-recalculated-in.922f":["Network-wide asset trust index, recalculated in real time.","Índice de confianza de activos de toda la red, recalculado en tiempo real.","Índice de confiança de ativos de toda a rede, recalculado em tempo real.","全网资产信任指数，实时重新计算。","Индекс доверия к активам по всей сети, пересчитываемый в реальном времени.","مؤشر ثقة الأصول على مستوى الشبكة، يُعاد احتسابه في الوقت الفعلي."],
     "neutral-by-design-difc-incorporated-aligned-wi.9884":["Neutral by design, DIFC incorporated, aligned with MiCA, MAS, VARA and FATF.","Neutral por diseño, constituida en DIFC, alineada con MiCA, MAS, VARA y FATF.","Neutra por conceção, constituída no DIFC, alinhada com MiCA, MAS, VARA e FATF.","设计上保持中立，于 DIFC 注册设立，符合 MiCA、MAS、VARA 与 FATF。","Нейтральна по замыслу, зарегистрирована в DIFC, соответствует MiCA, MAS, VARA и FATF.","محايدة بحكم التصميم، مُسجَّلة في DIFC، ومتوافقة مع MiCA وMAS وVARA وFATF."],
     "neutral-by-design.9ca6":["Neutral by design.","Neutral por diseño.","Neutra por design.","设计即中立。","Нейтральность по замыслу.","الحياد بالتصميم."],
     "neutrality-difc-incorporation-and-regulatory-a.9f88":["Neutrality, DIFC incorporation and regulatory alignment.","Neutralidad, constitución en DIFC y alineación regulatoria.","Neutralidade, constituição no DIFC e alinhamento regulatório.","中立性、DIFC 注册设立与监管一致性。","Нейтральность, регистрация в DIFC и регуляторное соответствие.","الحياد، والتأسيس في DIFC، والتوافق التنظيمي."],
@@ -462,6 +460,7 @@
     "real-time-provenance-for-every-tokenized-real.9bff":["Real time provenance for every tokenized real world asset.","Procedencia en tiempo real para cada activo del mundo real tokenizado.","Proveniência em tempo real para cada ativo do mundo real tokenizado.","为每一项代币化的真实世界资产提供实时溯源。","Происхождение в реальном времени для каждого токенизированного реального актива.","إثبات المنشأ في الوقت الفعلي لكل أصل واقعي مُرمَّز."],
     "real-time.b67c":["Real time","Tiempo real","Tempo real","实时","Реальное время","الوقت الفعلي"],
     "real-world-asset-owners.3763":["Real world asset owners","Propietarios de activos del mundo real","Proprietários de ativos do mundo real","现实世界资产所有者","Владельцы активов реального мира","ملاك أصول العالم الحقيقي"],
+    "real-world-asset-value-verified-across-the.183e":["Real world asset value verified across the network, growing as new evidence clears.","Valor de activos del mundo real verificado en toda la red, en aumento a medida que se valida nueva evidencia.","Valor de ativos do mundo real verificado em toda a rede, a crescer à medida que nova evidência é validada.","全网已验证的现实世界资产价值，随新证据通过验证持续增长。","Стоимость реальных активов, верифицированных в сети, растёт по мере подтверждения новых доказательств.","قيمة الأصول الواقعية المُتحقق منها عبر الشبكة، وتنمو مع اعتماد أدلة جديدة."],
     "real-world-assets-and-security-tokens-move.486f":["Real world assets and security tokens move in real time. Their verification still runs on point in time audits: delayed, declarative and detached from the asset itself.","Los activos del mundo real y los tokens de valores se mueven en tiempo real. Su verificación sigue basándose en auditorías puntuales: tardías, declarativas y desvinculadas del propio activo.","Os ativos do mundo real e os tokens de valores mobiliários movem-se em tempo real. A sua verificação continua a assentar em auditorias pontuais: tardias, declarativas e desligadas do próprio ativo.","现实世界资产与证券型代币实时流动，其验证却仍依赖某一时点的审计：滞后、申报式，且与资产本身脱节。","Активы реального мира и токены ценных бумаг движутся в реальном времени. Их верификация по-прежнему опирается на аудит на определённый момент времени: с задержкой, декларативно и в отрыве от самого актива.","تتحرك أصول العالم الحقيقي والرموز المالية في الوقت الفعلي، بينما لا يزال التحقق منها يعتمد على تدقيق عند نقطة زمنية واحدة: متأخر وتصريحي ومنفصل عن الأصل نفسه."],
     "real-world-assets.7e64":["real world assets.","activos del mundo real.","ativos do mundo real.","真实世界资产。","активы реального мира.","أصول العالم الحقيقي."],
     "reconciliation-effort-cut.0deb":["Reconciliation effort cut","Reducción del esfuerzo de conciliación","Redução do esforço de reconciliação","对账工作量降低","Сокращение затрат на сверку","خفض جهد التسوية"],
@@ -587,6 +586,9 @@
     "twin-vs-2691-7-hops-chain-agnostic.07bd":["twin VS-2691 · 7 hops · chain agnostic","gemelo VS-2691 · 7 saltos · agnóstico de cadena","gémeo VS-2691 · 7 saltos · agnóstico de cadeia","孪生体 VS-2691 · 7 跳 · 链无关","двойник VS-2691 · 7 переходов · независимо от блокчейна","التوأم VS-2691 · 7 قفزات · محايد تجاه السلسلة"],
     "ui.mandate":["Mandate {n} / {t}","Mandato {n} / {t}","Mandato {n} / {t}","任务 {n} / {t}","Мандат {n} / {t}","التفويض {n} / {t}"],
     "ui.thanks":["Thank you{name}. Our institutional team will contact you at {mail}.","Gracias{name}. Nuestro equipo institucional le contactará en {mail}.","Obrigado{name}. A nossa equipa institucional entrará em contacto em {mail}.","谢谢您{name}。我们的机构团队将通过 {mail} 与您联系。","Спасибо{name}. Наша институциональная команда свяжется с вами по адресу {mail}.","شكراً لك{name}. سيتواصل معك فريقنا المؤسسي عبر {mail}."],
+    "ui.va.amt":["${b} billion","{m} millones","{m} milhões","{y} 亿美元","{b} млрд долларов","{b} مليار دولار"],
+    "ui.va.label":["Live · over {amt} in verified assets","En vivo · más de {amt} en activos verificados","Em direto · mais de {amt} em ativos verificados","实时 · 已验证资产逾 {amt}","Онлайн · более {amt} верифицированных активов","مباشر · أكثر من {amt} من الأصول المُتحقق منها"],
+    "ui.va.num":["${b}B","US$ {m} M","US$ {m} M","{y} 亿美元","${b} млрд","{b} مليار $"],
     "underwriting-evidence.ebcb":["Underwriting evidence","Evidencia de suscripción","Evidência de subscrição","承保证据","Доказательства для андеррайтинга","أدلة الاكتتاب"],
     "unmeasurable.cfa4":["Unmeasurable","No medible","Não mensurável","不可测量","Неизмеримо","غير قابل للقياس"],
     "upay.83b1":["Upay","Upay","Upay","Upay","Upay","Upay"],
@@ -648,7 +650,7 @@
   };
   /* ==== I18N:END ==== */
 
-  var LANG = 'en', LKEY = 'verysset.lang', LX = 0, langSubs = [];
+  var LANG = 'en', LX = 0, langSubs = [];
   var REV = null;                      /* english text -> key, built lazily */
 
   function langIndex(c) { var i = I18N_LANGS.indexOf(c); return i < 0 ? 0 : i; }
@@ -755,8 +757,7 @@
       var c = opts[i] && opts[i].getAttribute('data-lang');
       close(true);
       if (!c || c === LANG) return;
-      try { w.localStorage.setItem(LKEY, c); } catch (e) { }
-      applyLang(c);
+      applyLang(c);            /* in memory only: never written to storage */
     }
     mark(LANG);
     onLang(mark);
@@ -793,11 +794,12 @@
     w.addEventListener('resize', function () { if (isOpen) place(); }, { passive: true });
   }
 
+  /* English on every load. The chosen language lives in memory for the current page view
+     only: a reload or a new visit starts again from the shipped English markup (lang="en",
+     dir="ltr"). Nothing is persisted; the key older builds wrote is removed once. */
   (function () {
-    var saved = 'en';
-    try { saved = w.localStorage.getItem(LKEY) || 'en'; } catch (e) { }
-    if (I18N_LANGS.indexOf(saved) < 0) saved = 'en';
-    applyLang(saved);
+    try { w.localStorage.removeItem('verysset.lang'); } catch (e) { }
+    applyLang('en');
     langMenu();
   })();
 
@@ -917,6 +919,94 @@
       counters.forEach(function (c) { cio.observe(c); });
     }
   }
+
+  /* ---------- live verified assets counter (hero strip) ----------
+     value = base + step * floor((now - anchor) / interval), in US$ millions, UTC based,
+     clamped at the anchor so a client clock set in the past never shows less than the base.
+     The model ships from build.py as data-va-* attributes; no network. The correct value is
+     written synchronously before first paint, then a 180ms count up from one step lower
+     plays once on first view (skipped under prefers-reduced-motion). If the page stays open
+     across an interval boundary the number ticks up in place. */
+  var vaEl = d.querySelector('[data-va-anchor]');
+  if (vaEl) (function () {
+    var DAY = 864e5;
+    /* thousands, decimal separator per locale; Arabic keeps Latin digits like the rest of the site */
+    var SEP = { en: [',', '.'], es: ['.', ','], pt: ['.', ','], zh: [',', '.'], ru: ['\u00a0', ','], ar: [',', '.'] };
+    var ad = String(vaEl.getAttribute('data-va-anchor') || '').split('-');
+    var anchor = Date.UTC(+ad[0], +ad[1] - 1, +ad[2]);
+    var base = parseInt(vaEl.getAttribute('data-va-base'), 10);
+    var step = parseInt(vaEl.getAttribute('data-va-step'), 10);
+    var span = parseInt(vaEl.getAttribute('data-va-days'), 10) * DAY;
+    var numEl = vaEl.querySelector('.va-n'), lblEl = vaEl.querySelector('.va-l');
+    if (!numEl || !lblEl || isNaN(anchor) || isNaN(base) || isNaN(step) || !(span > 0)) return;
+
+    function steps(now) { return Math.max(0, Math.floor((now - anchor) / span)); }
+    function valueAt(now) { return base + step * steps(now); }
+    /* integer millions -> string scaled by 10^digits, trailing zeros dropped */
+    function fmt(m, digits, sep) {
+      var sc = Math.pow(10, digits), ip = Math.floor(m / sc), fp = String(m % sc);
+      while (fp.length < digits) fp = '0' + fp;
+      fp = digits ? fp.replace(/0+$/, '') : '';
+      var is = String(ip).replace(/\B(?=(\d{3})+(?!\d))/g, sep[0]);
+      return fp ? is + sep[1] + fp : is;
+    }
+    /* {b} billions, {m} millions, {y} hundred millions (the Chinese yi) */
+    function toks(m) {
+      var sep = SEP[LANG] || SEP.en;
+      return { b: fmt(m, 3, sep), m: fmt(m, 0, sep), y: fmt(m, 2, sep) };
+    }
+    function paintNum(m) {
+      numEl.textContent = trf('ui.va.num', toks(m)) || ('$' + toks(m).b + 'B');
+    }
+    function paintLabel(m) {
+      var tpl = trk('ui.va.label', 'Live \u00b7 over {amt} in verified assets');
+      var amt = trf('ui.va.amt', toks(m)) || ('$' + toks(m).b + ' billion');
+      var i = tpl.indexOf('{amt}');
+      lblEl.textContent = '';
+      if (i < 0) { lblEl.textContent = tpl; return; }
+      var a = d.createElement('bdi');
+      a.className = 'va-a';
+      a.textContent = amt;
+      lblEl.appendChild(d.createTextNode(tpl.slice(0, i)));
+      lblEl.appendChild(a);
+      lblEl.appendChild(d.createTextNode(tpl.slice(i + 5)));
+    }
+
+    var cur = valueAt(Date.now()), run = 0;
+    function paint() { run++; vaEl.setAttribute('data-va-value', cur); paintNum(cur); paintLabel(cur); }
+    function countUp(from, to) {
+      var id = ++run, t0 = null, dur = 180;
+      if (RM || from >= to) { paintNum(to); return; }
+      requestAnimationFrame(function st(t) {
+        if (id !== run) return;                /* a language switch or tick superseded it */
+        if (t0 === null) t0 = t;
+        var k = Math.min((t - t0) / dur, 1);
+        paintNum(k < 1 ? Math.round(from + (to - from) * easeOut(k)) : to);
+        if (k < 1) requestAnimationFrame(st);
+      });
+    }
+    paint();                                   /* correct text before first paint */
+    onLang(paint);
+
+    if (!RM && 'IntersectionObserver' in w) {
+      var vio = new IntersectionObserver(function (es) {
+        if (!es[0].isIntersecting) return;
+        vio.disconnect();
+        /* wait for the strip reveal to start so the count up is actually seen */
+        setTimeout(function () { countUp(cur - step, cur); }, 200);   /* visual start only; the value itself never drops */
+      }, { threshold: 0.5 });
+      vio.observe(numEl);
+    }
+
+    (function tick() {
+      var now = Date.now(), next = anchor + (steps(now) + 1) * span;
+      setTimeout(function () {
+        var v = valueAt(Date.now()), from = cur;
+        if (v > cur) { cur = v; paint(); countUp(from, cur); }
+        tick();
+      }, Math.min(Math.max(next - now + 250, 1000), 2147483000));
+    })();
+  })();
 
   /* ---------- hero entrance + parallax ---------- */
   var h1 = d.querySelector('.hero h1');

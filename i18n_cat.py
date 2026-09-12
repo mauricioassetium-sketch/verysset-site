@@ -27,6 +27,33 @@ EXTRA = {
         "ru": "Спасибо{name}. Наша институциональная команда свяжется с вами по адресу {mail}.",
         "ar": "شكراً لك{name}. سيتواصل معك فريقنا المؤسسي عبر {mail}.",
     },
+    # live verified assets counter (hero strip, section 1). Tokens: {b} billions (4.276),
+    # {m} millions (4.276 with a dot, as in the Spanish reference), {y} Chinese yi (42.76).
+    # Separators are applied per locale in site.js; digits stay Latin in every language.
+    "ui.va.num": {
+        "en": "${b}B",
+        "es": "US$ {m} M",
+        "pt": "US$ {m} M",
+        "zh": "{y} 亿美元",
+        "ru": "${b} млрд",
+        "ar": "{b} مليار $",
+    },
+    "ui.va.amt": {
+        "en": "${b} billion",
+        "es": "{m} millones",
+        "pt": "{m} milhões",
+        "zh": "{y} 亿美元",
+        "ru": "{b} млрд долларов",
+        "ar": "{b} مليار دولار",
+    },
+    "ui.va.label": {
+        "en": "Live · over {amt} in verified assets",
+        "es": "En vivo · más de {amt} en activos verificados",
+        "pt": "Em direto · mais de {amt} em ativos verificados",
+        "zh": "实时 · 已验证资产逾 {amt}",
+        "ru": "Онлайн · более {amt} верифицированных активов",
+        "ar": "مباشر · أكثر من {amt} من الأصول المُتحقق منها",
+    },
 }
 
 CAT = {
@@ -339,7 +366,6 @@ CAT = {
     "linking.4f09": {"es": "Vinculación", "pt": "Ligação", "zh": "关联", "ru": "Связывание", "ar": "الربط"},
     "lithium-water.0d47": {"es": "Litio y agua", "pt": "Lítio e água", "zh": "锂与水资源", "ru": "Литий и вода", "ar": "الليثيوم والمياه"},
     "live-integrity-for-generation-transmission-and.0b4f": {"es": "Integridad en vivo para activos de generación, transmisión e infraestructura.", "pt": "Integridade em tempo real para ativos de geração, transmissão e infraestrutura.", "zh": "为发电、输电及基础设施资产提供实时完整性。", "ru": "Целостность в реальном времени для активов генерации, передачи и инфраструктуры.", "ar": "سلامة مباشرة لأصول التوليد والنقل والبنية التحتية."},
-    "live-trust-score.5b8b": {"es": "Puntuación de confianza en vivo", "pt": "Pontuação de confiança em tempo real", "zh": "实时信任评分", "ru": "Живой рейтинг доверия", "ar": "درجة الثقة الحية"},
     "live.955a": {"es": "En vivo", "pt": "Em direto", "zh": "实时", "ru": "Онлайн", "ar": "مباشر"},
     "location-and-perimeter-events.67ef": {"es": "Eventos de ubicación y perímetro", "pt": "Eventos de localização e perímetro", "zh": "位置与周界事件", "ru": "События местоположения и периметра", "ar": "أحداث الموقع والمحيط"},
     "locking.195c": {"es": "Bloqueo", "pt": "Bloqueio", "zh": "锁定", "ru": "Блокировка", "ar": "القفل"},
@@ -460,6 +486,7 @@ CAT = {
     "real-time-provenance-for-every-tokenized-real.9bff": {"es": "Procedencia en tiempo real para cada activo del mundo real tokenizado.", "pt": "Proveniência em tempo real para cada ativo do mundo real tokenizado.", "zh": "为每一项代币化的真实世界资产提供实时溯源。", "ru": "Происхождение в реальном времени для каждого токенизированного реального актива.", "ar": "إثبات المنشأ في الوقت الفعلي لكل أصل واقعي مُرمَّز."},
     "real-time.b67c": {"es": "Tiempo real", "pt": "Tempo real", "zh": "实时", "ru": "Реальное время", "ar": "الوقت الفعلي"},
     "real-world-asset-owners.3763": {"es": "Propietarios de activos del mundo real", "pt": "Proprietários de ativos do mundo real", "zh": "现实世界资产所有者", "ru": "Владельцы активов реального мира", "ar": "ملاك أصول العالم الحقيقي"},
+    "real-world-asset-value-verified-across-the.183e": {"es": "Valor de activos del mundo real verificado en toda la red, en aumento a medida que se valida nueva evidencia.", "pt": "Valor de ativos do mundo real verificado em toda a rede, a crescer à medida que nova evidência é validada.", "zh": "全网已验证的现实世界资产价值，随新证据通过验证持续增长。", "ru": "Стоимость реальных активов, верифицированных в сети, растёт по мере подтверждения новых доказательств.", "ar": "قيمة الأصول الواقعية المُتحقق منها عبر الشبكة، وتنمو مع اعتماد أدلة جديدة."},
     "real-world-assets-and-security-tokens-move.486f": {"es": "Los activos del mundo real y los tokens de valores se mueven en tiempo real. Su verificación sigue basándose en auditorías puntuales: tardías, declarativas y desvinculadas del propio activo.", "pt": "Os ativos do mundo real e os tokens de valores mobiliários movem-se em tempo real. A sua verificação continua a assentar em auditorias pontuais: tardias, declarativas e desligadas do próprio ativo.", "zh": "现实世界资产与证券型代币实时流动，其验证却仍依赖某一时点的审计：滞后、申报式，且与资产本身脱节。", "ru": "Активы реального мира и токены ценных бумаг движутся в реальном времени. Их верификация по-прежнему опирается на аудит на определённый момент времени: с задержкой, декларативно и в отрыве от самого актива.", "ar": "تتحرك أصول العالم الحقيقي والرموز المالية في الوقت الفعلي، بينما لا يزال التحقق منها يعتمد على تدقيق عند نقطة زمنية واحدة: متأخر وتصريحي ومنفصل عن الأصل نفسه."},
     "real-world-assets.7e64": {"es": "activos del mundo real.", "pt": "ativos do mundo real.", "zh": "真实世界资产。", "ru": "активы реального мира.", "ar": "أصول العالم الحقيقي."},
     "reconciliation-effort-cut.0deb": {"es": "Reducción del esfuerzo de conciliación", "pt": "Redução do esforço de reconciliação", "zh": "对账工作量降低", "ru": "Сокращение затрат на сверку", "ar": "خفض جهد التسوية"},
@@ -639,7 +666,6 @@ CAT = {
     "work-email.e7fe": {"es": "Correo corporativo", "pt": "Email profissional", "zh": "工作邮箱", "ru": "Рабочая почта", "ar": "البريد الإلكتروني للعمل"},
     "yes-verysset-is-designed-to-coexist-with.c6a0": {"es": "Sí. Verysset está diseñado para coexistir con marcos como MiCA (UE), MAS (Singapur), VARA (Dubái) y los estándares FATF, sin sustituir las obligaciones de las entidades usuarias.", "pt": "Sim. A Verysset foi concebida para coexistir com quadros como MiCA (UE), MAS (Singapura), VARA (Dubai) e as normas FATF, sem substituir as obrigações das entidades utilizadoras.", "zh": "是的。Verysset 的设计可与 MiCA（欧盟）、MAS（新加坡）、VARA（迪拜）等框架以及 FATF 标准共存，并不取代使用方实体自身的义务。", "ru": "Да. Verysset спроектирован так, чтобы сосуществовать с такими режимами, как MiCA (ЕС), MAS (Сингапур), VARA (Дубай), и со стандартами FATF, не заменяя обязательства организаций-пользователей.", "ar": "نعم. صُمِّمت Verysset للتعايش مع أطر مثل MiCA (الاتحاد الأوروبي) وMAS (سنغافورة) وVARA (دبي) ومعايير FATF، دون أن تحل محل التزامات الكيانات المستخدمة."},
     "your-name.221e": {"es": "Su nombre", "pt": "O seu nome", "zh": "您的姓名", "ru": "Ваше имя", "ar": "اسمك"},
-    "network-wide-asset-trust-index-recalculated-in.922f": {"es": "Índice de confianza de activos de toda la red, recalculado en tiempo real.", "pt": "Índice de confiança de ativos de toda a rede, recalculado em tempo real.", "zh": "全网资产信任指数，实时重新计算。", "ru": "Индекс доверия к активам по всей сети, пересчитываемый в реальном времени.", "ar": "مؤشر ثقة الأصول على مستوى الشبكة، يُعاد احتسابه في الوقت الفعلي."},
     "satellite-sweeps-and-event-monitoring-never-pa.57f3": {"es": "Los barridos satelitales y el monitoreo de eventos nunca se detienen.", "pt": "As varreduras por satélite e a monitorização de eventos nunca param.", "zh": "卫星扫描与事件监测从不间断。", "ru": "Спутниковые обзоры и мониторинг событий идут без перерыва.", "ar": "المسح عبر الأقمار الصناعية ومراقبة الأحداث لا يتوقفان أبداً."},
     "native-message-format-for-global-banking-rails.a10c": {"es": "Formato de mensajería nativo para las redes bancarias globales.", "pt": "Formato de mensagens nativo para as redes bancárias globais.", "zh": "面向全球银行通道的原生报文格式。", "ru": "Нативный формат сообщений для глобальных банковских систем.", "ar": "صيغة رسائل أصلية لشبكات المصارف العالمية."},
     "standards-aligned-infrastructure.61ca": {"es": "Infraestructura alineada con estándares", "pt": "Infraestrutura alinhada com normas", "zh": "与标准对齐的基础设施", "ru": "Инфраструктура, согласованная со стандартами", "ar": "بنية تحتية متوافقة مع المعايير"},

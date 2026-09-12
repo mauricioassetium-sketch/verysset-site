@@ -423,15 +423,39 @@ def pgnav(prev, nxt):
     return "".join(o)
 
 # ---------------------------------------------------------------- hero strip + footer badge icons
+
+# Live verified assets counter (hero strip, section 1). ONE source of truth for the model:
+#   value(date) = VA_BASE_M + VA_STEP_M * floor(days since VA_ANCHOR / VA_DAYS)   (US$ millions)
+# The numbers ship to the browser as data-va-* attributes and site.js recomputes on every load
+# from the visitor's clock (UTC, no network). The build only bakes the first paint / SEO text.
+VA_ANCHOR = "2026-09-12"     # UTC midnight; the counter reads exactly VA_BASE_M on this day
+VA_BASE_M = 4276             # US$ 4,276 million = US$ 4.276 billion
+VA_STEP_M = 13               # + US$ 13 million ...
+VA_DAYS = 10                 # ... every 10 days
+
+
+def va_value_m(day=None):
+    import datetime
+    a = datetime.date.fromisoformat(VA_ANCHOR)
+    t = day or datetime.datetime.now(datetime.timezone.utc).date()
+    return VA_BASE_M + VA_STEP_M * max(0, (t - a).days // VA_DAYS)
+
+
+def va_billions(m):
+    """4276 -> '4.276', 4300 -> '4.3', 5000 -> '5' (integer math, no float drift)."""
+    ip, fp = divmod(int(m), 1000)
+    fp = ("%03d" % fp).rstrip("0")
+    return "%d.%s" % (ip, fp) if fp else "%d" % ip
+
 # 24x24, stroke based (1.5px, currentColor), the .acf detail carries the #FFD400 accent.
 def _svg(cls, title, body):
     return ('<svg class="%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
             '<title>%s</title>%s</svg>' % (cls, title, body))
 
 STAT_ICONS = {
-    "trust": _svg("ci", "Live trust score shield",
-                  '<path class="acf" d="M12 3.2l7 2.8v5.3c0 4.3-2.9 7.9-7 9.5-4.1-1.6-7-5.2-7-9.5V6z"/>'
-                  '<path d="m8.9 12.1 2.2 2.2 4.1-4.4"/>'),
+    "vassets": _svg("ci", "Verified assets ledger",
+                    '<path class="acf" d="M2.6 10.2 12 2.8l9.4 7.4z"/>'
+                    '<path d="M5.6 13v4.8M9.9 13v4.8M14.1 13v4.8M18.4 13v4.8M3 20.8h18"/>'),
     "sat": _svg("ci", "Continuous satellite verification",
                 '<path class="acf" d="M13 8l3 3-3 3-3-3z"/>'
                 '<path d="M11.1 4.9 9.1 2.9 4.9 7.1 6.9 9.1z"/><path d="M21.1 14.9 19.1 12.9 14.9 17.1 16.9 19.1z"/>'
@@ -837,10 +861,15 @@ def build_index():
              'One verifiable truth layer for institutional capital.</p>')
     b.append('<div class="hcta rv" data-i="3"><a class="btn" href="contact.html">Request institutional meeting</a>'
              '<a class="tl" href="how-it-works.html">See how it works <span class="ar">&rarr;</span></a></div>')
-    b.append('<ul class="chips rv" data-i="4" aria-label="Verysset live network metrics: trust score, continuous verification, ISO 20022 interoperability">'
-             '<li class="chip"><span class="cib">' + STAT_ICONS["trust"] + '</span><div class="cbd">'
-             '<b><span data-count="87.4" data-dec="1">87.4</span></b><span class="cl"><span class="dot"></span>Live trust score</span>'
-             '<p class="cc">Network-wide asset trust index, recalculated in real time.</p></div></li>'
+    va_b = va_billions(va_value_m())
+    b.append('<ul class="chips rv" data-i="4" aria-label="Verysset live network metrics: verified assets, continuous verification, ISO 20022 interoperability">'
+             '<li class="chip" data-va-anchor="%s" data-va-base="%d" data-va-step="%d" data-va-days="%d">'
+             % (VA_ANCHOR, VA_BASE_M, VA_STEP_M, VA_DAYS) +
+             '<span class="cib">' + STAT_ICONS["vassets"] + '</span><div class="cbd">'
+             '<b><span class="va-n" data-noi18n>$' + va_b + 'B</span></b>'
+             '<span class="cl"><span class="dot"></span><span class="va-l" data-noi18n>Live &middot; over '
+             '<bdi class="va-a">$' + va_b + ' billion</bdi> in verified assets</span></span>'
+             '<p class="cc">Real world asset value verified across the network, growing as new evidence clears.</p></div></li>'
              '<li class="chip"><span class="cib">' + STAT_ICONS["sat"] + '</span><div class="cbd">'
              '<b>24/7</b><span class="cl">Continuous verification</span>'
              '<p class="cc">Satellite sweeps and event monitoring never pause.</p></div></li>'

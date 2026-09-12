@@ -410,6 +410,55 @@ def pgnav(prev, nxt):
     o.append('</div></div>')
     return "".join(o)
 
+# ---------------------------------------------------------------- hero strip + footer badge icons
+# 24x24, stroke based (1.5px, currentColor), the .acf detail carries the #FFD400 accent.
+def _svg(cls, title, body):
+    return ('<svg class="%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'
+            '<title>%s</title>%s</svg>' % (cls, title, body))
+
+STAT_ICONS = {
+    "trust": _svg("ci", "Live trust score shield",
+                  '<path class="acf" d="M12 3.2l7 2.8v5.3c0 4.3-2.9 7.9-7 9.5-4.1-1.6-7-5.2-7-9.5V6z"/>'
+                  '<path d="m8.9 12.1 2.2 2.2 4.1-4.4"/>'),
+    "sat": _svg("ci", "Continuous satellite verification",
+                '<path class="acf" d="M13 8l3 3-3 3-3-3z"/>'
+                '<path d="M11.1 4.9 9.1 2.9 4.9 7.1 6.9 9.1z"/><path d="M21.1 14.9 19.1 12.9 14.9 17.1 16.9 19.1z"/>'
+                '<path d="M11.5 9.5 9 7M14.5 12.5 17 15"/>'
+                '<path d="M3 14.5a6.5 6.5 0 0 1 6.5 6.5M3 17.8a3.2 3.2 0 0 1 3.2 3.2"/>'
+                '<circle class="acf" cx="3.6" cy="20.4" r="1.1"/>'),
+    "interop": _svg("ci", "Institutional interoperability network",
+                    '<circle cx="5" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>'
+                    '<circle cx="5" cy="19" r="2"/><circle cx="19" cy="19" r="2"/>'
+                    '<path d="M6.5 6.5 10 10M17.5 6.5 14 10M6.5 17.5 10 14M17.5 17.5 14 14M7 5h10M7 19h10"/>'
+                    '<circle class="acf" cx="12" cy="12" r="2.8"/>'),
+}
+
+BADGE_ICONS = {
+    "interop": _svg("fbi", "Interoperability",
+                    '<path d="M4 8.5h14M15 5l3.5 3.5L15 12M20 15.5H6M9 12l-3.5 3.5L9 19"/>'
+                    '<circle class="acf" cx="12" cy="12" r="1.6"/>'),
+    "lock": _svg("fbi", "Information security",
+                 '<path d="M12 3l7 2.8v5.4c0 4.3-2.9 7.9-7 9.6-4.1-1.7-7-5.3-7-9.6V5.8z"/>'
+                 '<rect class="acf" x="9" y="11" width="6" height="4.6" rx="1"/>'
+                 '<path d="M10.2 11V9.6a1.8 1.8 0 0 1 3.6 0V11"/>'),
+    "cont": _svg("fbi", "Business continuity",
+                 '<path d="M19.5 12a7.5 7.5 0 0 1-12.8 5.3M4.5 12a7.5 7.5 0 0 1 12.8-5.3"/>'
+                 '<path d="M17.3 3.1v3.6h-3.6M6.7 20.9v-3.6h3.6"/>'
+                 '<circle class="acf" cx="12" cy="12" r="2"/>'),
+}
+
+DISCLAIMER = (
+    'Disclaimer: Verysset does not tokenize assets, does not act as a broker, dealer, exchange, custodian, or financial '
+    'advisor, and does not execute trading operations on its own behalf or on behalf of third parties. Verysset is not '
+    'authorized or regulated by the Dubai Financial Services Authority (DFSA) and does not provide any financial services '
+    'within or from the Dubai International Financial Centre (DIFC). Verysset is solely a provider of technology '
+    'infrastructure and software, an activity that does not constitute a &quot;financial service&quot; under the DIFC '
+    'Regulatory Law 2004 and does not require a DFSA license. Nothing contained on this website constitutes an offer, '
+    'solicitation, recommendation, or investment advice. Any reference to digital assets, tokens, or financial '
+    'instruments is for informational purposes only and does not imply that Verysset engages in such activities. Use of '
+    'our services does not create a fiduciary, intermediary, or wealth management relationship. Each user is responsible '
+    'for complying with the applicable regulations in their jurisdiction.')
+
 
 FOOT = """</main>
 <footer><div class="wrap">
@@ -422,7 +471,9 @@ FOOT = """</main>
 <div class="fcol"><h5>Institutions</h5><a href="institutions.html">Actors &amp; savings</a><a href="compliance.html#licensing">Licensing</a><a href="compliance.html#governance">Governance</a><a href="faq.html">FAQ</a></div>
 <div class="fcol"><h5>Contact</h5><a href="mailto:CONTACT_EMAIL_TOKEN">CONTACT_EMAIL_TOKEN</a><a href="contact.html">Request a meeting</a><a href="compliance.html#jurisdiction">Jurisdiction</a><a href="compliance.html">Legal</a><a href="partners.html">Partners</a></div>
 </div>
-<div class="fbot"><span>&copy; 2026 VERYSSET. All rights reserved.</span><span>Incorporated under MAS (Singapore) &amp; licensed by VARA (Dubai). Legally aligned with MAS, VARA, MiCA &amp; FATF.</span></div>
+<div class="fbot"><span class="fcopy">&copy; 2026 VERYSSET. All rights reserved.</span>
+<div class="fstd"><span class="fstdl">Standards-aligned infrastructure</span><ul class="fbadges" aria-label="Standards-aligned infrastructure: ISO 20022, ISO 27001, ISO 27002, ISO 22301"><li class="fbadge">BADGE_INTEROP<span>ISO 20022</span><small>aligned</small></li><li class="fbadge">BADGE_LOCK<span>ISO 27001 / 27002</span><small>aligned</small></li><li class="fbadge">BADGE_CONT<span>ISO 22301</span><small>aligned</small></li></ul></div></div>
+<div class="fdisc" lang="en" dir="ltr" data-noi18n><p>DISCLAIMER_TOKEN</p></div>
 </div></footer>
 <button class="ttop" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"/></svg></button>
 <script src="assets/site.js"></script>
@@ -433,7 +484,9 @@ def page(fname, title, desc, body, prev=None, nxt=None, pgn=True):
     doc = head(title, desc, fname) + body
     if pgn:
         doc += '<section class="sec tight">' + pgnav(prev, nxt) + '</section>'
-    doc += FOOT.replace('CONTACT_EMAIL_TOKEN', CONTACT_EMAIL)
+    doc += (FOOT.replace('CONTACT_EMAIL_TOKEN', CONTACT_EMAIL).replace('DISCLAIMER_TOKEN', DISCLAIMER)
+            .replace('BADGE_INTEROP', BADGE_ICONS['interop']).replace('BADGE_LOCK', BADGE_ICONS['lock'])
+            .replace('BADGE_CONT', BADGE_ICONS['cont']))
     doc = i18nize(doc, fname)
     with open(os.path.join(OUT, fname), "w", encoding="utf-8") as f:
         f.write(doc)
@@ -772,11 +825,17 @@ def build_index():
              'One verifiable truth layer for institutional capital.</p>')
     b.append('<div class="hcta rv" data-i="3"><a class="btn" href="contact.html">Request institutional meeting</a>'
              '<a class="tl" href="how-it-works.html">See how it works <span class="ar">&rarr;</span></a></div>')
-    b.append('<div class="chips rv" data-i="4">'
-             '<div class="chip"><b><span data-count="87.4" data-dec="1">0</span></b><s><span class="dot"></span>Live trust score</s></div>'
-             '<div class="chip"><b>24/7</b><s>Continuous verification</s></div>'
-             '<div class="chip"><b>ISO&nbsp;20022<span class="u">aligned</span></b><s>Institutional interoperability</s></div>'
-             '</div>')
+    b.append('<ul class="chips rv" data-i="4" aria-label="Verysset live network metrics: trust score, continuous verification, ISO 20022 interoperability">'
+             '<li class="chip"><span class="cib">' + STAT_ICONS["trust"] + '</span><div class="cbd">'
+             '<b><span data-count="87.4" data-dec="1">87.4</span></b><span class="cl"><span class="dot"></span>Live trust score</span>'
+             '<p class="cc">Network-wide asset trust index, recalculated in real time.</p></div></li>'
+             '<li class="chip"><span class="cib">' + STAT_ICONS["sat"] + '</span><div class="cbd">'
+             '<b>24/7</b><span class="cl">Continuous verification</span>'
+             '<p class="cc">Satellite sweeps and event monitoring never pause.</p></div></li>'
+             '<li class="chip"><span class="cib">' + STAT_ICONS["interop"] + '</span><div class="cbd">'
+             '<b>ISO&nbsp;20022<span class="u">aligned</span></b><span class="cl">Institutional interoperability</span>'
+             '<p class="cc">Native message format for global banking rails.</p></div></li>'
+             '</ul>')
     b.append('</div></section>')
 
     # pinned showcase
@@ -1314,8 +1373,7 @@ def build_contact():
              '<hr class="hr" style="margin:30px 0 24px">'
              '<p class="addr"><b>Verysset Veritas Ledger Ltd.</b>Innovation Hub, Level 14, Gate Village Building 4<br>'
              'Dubai International Financial Centre (DIFC)<br>Dubai, United Arab Emirates</p>'
-             '<p class="addr" style="margin-top:20px"><b>Group entities</b>Verysset Veritas Ledger Ltd. (Dubai, DIFC)<br>'
-             'VERYSSET Global Holdings Pte. Ltd. (Singapore)<br>VERYSSET Financial Governance FZ LLC (Dubai)</p>'
+             '<p class="addr" style="margin-top:20px"><b>Group entities</b>Verysset Veritas Ledger Ltd. (Dubai, DIFC)</p>'
              '<p class="addr" style="margin-top:20px"><b>Direct</b>'
              '<a class="mailto" href="mailto:%s">%s</a></p></div>' % (CONTACT_EMAIL, CONTACT_EMAIL))
     b.append('<form class="form rv" data-i="1" id="rf" novalidate method="post" '

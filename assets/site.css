@@ -168,7 +168,7 @@ html:not([lang=en]) .lang::after{content:"";position:absolute;top:5px;right:5px;
 [dir=rtl] .skip{left:auto;right:0}
 [dir=rtl] .chip{border-left:0;border-right:1px solid var(--line)}
 [dir=rtl] .chip:first-child{border-right:0}
-[dir=rtl] .chip b .u{margin-left:0;margin-right:3px}
+[dir=rtl] .cl .dot{margin-right:0;margin-left:7px}
 [dir=rtl] .card::after,[dir=rtl] .step::before{left:auto;right:0}
 [dir=rtl] .step{padding-right:clamp(18px,2.2vw,32px);padding-left:0;border-right:0;border-left:1px solid var(--line)}
 [dir=rtl] .step:last-child{border-left:0;padding-left:0}
@@ -264,14 +264,36 @@ html[lang=zh] .eb,html[lang=zh] .kn,html[lang=zh] .mono{letter-spacing:.08em}
 [dir=rtl] .hero h1 em::after{transform-origin:right;bottom:-.04em;height:.16em}
 .hsub{margin:24px auto 0;max-width:60ch;font-size:clamp(15.5px,1.5vw,19px);color:var(--mid);line-height:1.6;letter-spacing:-.01em}
 .hcta{margin-top:34px;display:flex;align-items:center;justify-content:center;gap:14px 24px;flex-wrap:wrap}
-.chips{margin-top:clamp(40px,5.5vw,70px);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
-  display:grid;grid-template-columns:repeat(3,1fr)}
-.chip{padding:22px 14px;text-align:center;border-left:1px solid var(--line)}
+/* hero stats strip: three sections, hairline dividers, icon + number + label + one line caption */
+.chips{margin:clamp(40px,5.5vw,70px) 0 0;padding:0;list-style:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.chip{display:flex;align-items:flex-start;gap:16px;min-width:0;text-align:start;
+  padding:clamp(22px,2.6vw,34px) clamp(16px,2.4vw,34px);border-left:1px solid var(--line)}
 .chip:first-child{border-left:0}
-.chip b{display:block;font-size:clamp(21px,2.5vw,31px);font-weight:600;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums}
-.chip b .u{font-size:.5em;letter-spacing:.02em;color:var(--muted);margin-left:3px}
-.chip s{display:block;text-decoration:none;margin-top:9px;font-size:10px;font-weight:700;
-  letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
+.cib{flex:none;display:grid;place-items:center;width:42px;height:42px;margin-top:-2px;border:1px solid var(--line2);border-radius:var(--r);
+  background:var(--paper);color:var(--ink);transition:border-color .15s ease,background-color .15s ease,box-shadow .15s ease,transform .15s ease}
+.ci{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.ci .acf{fill:var(--yl);transform-box:fill-box;transform-origin:center;transition:transform .15s ease}
+.chip:hover .cib{border-color:var(--yl);background:var(--yl-w);box-shadow:0 0 0 4px rgba(255,212,0,.22),0 8px 20px -10px rgba(230,191,0,.9);transform:scale(1.06)}
+.chip:hover .ci .acf{transform:scale(1.14)}
+.cbd{flex:1;min-width:0}
+.chip b{display:block;font-family:var(--disp);font-size:clamp(24px,2.7vw,34px);font-weight:600;letter-spacing:-.03em;line-height:1;
+  color:var(--ink);font-variant-numeric:tabular-nums}
+.chip b .u{font-family:var(--sans);font-size:.4em;font-weight:600;letter-spacing:.02em;color:var(--muted);margin-inline-start:5px;white-space:nowrap}
+.cl{display:block;margin-top:10px;font-size:10px;font-weight:700;line-height:1.45;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.cc{margin-top:8px;font-size:13px;line-height:1.5;color:var(--mid);max-width:34ch}
+html[lang=ar] .cl,html[lang=ar] .fstdl,html[lang=ar] .fbadge small{letter-spacing:0}
+@media(max-width:1000px){
+  .chip{flex-direction:column;align-items:center;text-align:center;gap:14px;padding:24px 14px}
+  .cc{margin-inline:auto;font-size:12.5px}
+}
+@media(max-width:720px){
+  .chips{grid-template-columns:1fr}
+  .chip{flex-direction:row;align-items:flex-start;text-align:start;gap:16px;padding:20px 2px;border-left:0;border-top:1px solid var(--line)}
+  [dir=rtl] .chip{border-right:0}
+  .chip:first-child{border-top:0}
+  .cc{margin-inline:0;max-width:46ch}
+}
 .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--yl);
   margin-right:7px;vertical-align:middle;animation:pl 2.4s ease-in-out infinite}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.25}}
@@ -660,7 +682,23 @@ footer .blogo{height:48px}
 .fcol a{display:block;padding:6px 0;font-size:13.5px;color:#9aa0a8;transition:color .2s,padding-left .2s}
 .fcol a:hover{color:var(--yl);padding-left:5px}
 .fbot{margin-top:clamp(38px,5vw,64px);padding-top:24px;border-top:1px solid #26272b;display:flex;flex-wrap:wrap;gap:12px 28px;
-  justify-content:space-between;font-size:11.5px;color:#6f757d}
+  justify-content:space-between;align-items:center;font-size:11.5px;color:#6f757d}
+/* standards badges: alignment, not certification. Text badges only, no ISO marks. */
+.fstd{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.fstdl{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#8a9099}
+.fbadges{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.fbadge{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  white-space:nowrap;border:1px solid #33353b;border-radius:999px;padding:7px 12px 7px 10px;color:#c8cdd6;
+  transition:border-color .15s ease,background-color .15s ease,color .15s ease}
+.fbadge small{font-family:var(--sans);font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:none;color:#80868f;
+  padding-inline-start:7px;border-inline-start:1px solid #33353b}
+.fbadge:hover{border-color:var(--yl);background:rgba(255,212,0,.08);color:#fff}
+.fbadge:hover small{color:#c8cdd6}
+.fbi{width:14px;height:14px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.fbi .acf{fill:var(--yl);stroke:var(--yl)}
+/* legal disclaimer: authoritative English on every locale, always the last block */
+.fdisc{margin-top:22px;padding-top:20px;border-top:1px solid #26272b;text-align:left}
+.fdisc p{margin:0;font-size:11px;line-height:1.6;color:#868c95;overflow-wrap:break-word}
 
 /* ================= PLANET MAP - GEO SENTINEL ORBITAL SWEEP ================= */
 .planetsec{position:relative;background:var(--bg);overflow:hidden}
@@ -822,9 +860,6 @@ footer .blogo{height:48px}
   .pgnav a.next{text-align:left;align-items:flex-start}
 }
 @media(max-width:600px){
-  .chips{grid-template-columns:1fr}
-  .chip{border-left:0;border-top:1px solid var(--line)}
-  .chip:first-child{border-top:0}
   .vgrid{grid-template-columns:1fr}
   .fgrid{grid-template-columns:1fr}
   .fa p{padding-right:0}

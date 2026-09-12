@@ -10,6 +10,7 @@ import loopkit
 import mirror
 import pedigree
 import jurisdiction
+import rwa
 import os, re, io, json, html, hashlib
 import mapgen
 import i18n_cat
@@ -936,7 +937,8 @@ def build_index():
     # hero
     b.append('<section class="hero"><div class="wrap">')
     b.append('<span class="eb nb rv">Verysset&reg; &middot; Sovereign grade verification for real world assets</span>')
-    b.append('<h1 class="rv" data-i="1">Sovereign grade verification for <em>real world assets.</em></h1>')
+    # looping "real world assets." underline (rwa.py): live text, animated SVG bar, replaces the em::after wipe
+    b.append('<h1 class="rv" data-i="1">Sovereign grade verification for ' + rwa.em() + '</h1>')
     b.append('<p class="hsub rv" data-i="2">Continuous, auditable trust. The evidence banks and regulators accept. '
              'One verifiable truth layer for institutional capital.</p>')
     b.append('<div class="hcta rv" data-i="3"><a class="btn" href="contact.html">Request institutional meeting</a>'

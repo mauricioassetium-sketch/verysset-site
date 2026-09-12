@@ -6,12 +6,14 @@ The tiny inline script right after the overlay decides, before first paint, whet
 overlay plays: it is removed at once when this browser session already saw it
 (sessionStorage "vs-preloader-played") or when prefers-reduced-motion is set.
 Visible words are plain SVG <text>, so build.py's i18nize() keys them automatically.
-Timeline: beat 1 satellite 0.0-1.0s, beat 2 scan 1.0-2.3s, beat 3 twin 2.3-3.4s,
-beat 4 hold to 3.8s, then a 300ms fade (capped at 4.5s total if window load is slow).
+Timeline (8s intro): beat 1 earth + satellite 0.0-2.0s, beat 2 scan + trust score 2.0-4.8s,
+beat 3 twin + chips 4.8-7.0s, beat 4 hold to 8.0s. Exit: the overlay rises bottom to top
+(translateY(-100%), 1.3s) and is removed; waits at most 150ms for window load, so it is
+gone by ~9.5s.
 """
 
 # ground verification points: (x, y, delay seconds), synced to the linear beam sweep
-PTS = [(140, 344, 1.08), (225, 337, 1.40), (310, 334, 1.68), (395, 335, 1.97), (470, 338, 2.26)]
+PTS = [(140, 344, 2.17), (225, 337, 2.86), (310, 334, 3.46), (395, 335, 4.09), (470, 338, 4.71)]
 
 # tiny flat glyphs drawn under each point (satellite, IoT, LiDAR, drone, IR)
 GLYPHS = [
@@ -22,7 +24,7 @@ GLYPHS = [
     "M-5 0q2.5-4 5 0t5 0M-5 3q2.5-4 5 0t5 0",           # IR heat wave
 ]
 
-COUNTS = [("0", 0.0), ("12", 1.08), ("34", 1.40), ("58", 1.68), ("79", 1.97), ("93", 2.26)]
+COUNTS = [("0", 0.0), ("12", 2.17), ("34", 2.86), ("58", 3.46), ("79", 4.09), ("93", 4.71)]
 
 
 def _iso(yc, hw=75, hh=30, t=22, cx=305):
@@ -65,13 +67,13 @@ def preloader():
                  '</g>' % (x, y, GLYPHS[i], dl, dl))
     # beat 3: links from points to the twin base
     o.append('<g class="vpl-links" stroke="#FFD400" stroke-width="1" fill="none">' + "".join(
-        '<path pathLength="1" d="M%d %dL305 318" style="animation-delay:%.2fs"/>' % (x, y, 2.3 + i * 0.04)
+        '<path pathLength="1" d="M%d %dL305 318" style="animation-delay:%.2fs"/>' % (x, y, 4.8 + i * 0.1)
         for i, (x, y, _) in enumerate(PTS)) + '</g>')
     # digital twin: 3 stacked isometric layers, outline draws then facets fill
     labels = [("1", "SPATIAL"), ("2", "MATERIAL"), ("3", "OPERATIONS")]
     for i, yc in enumerate([262, 214, 166]):
         top, left, right, outline = _iso(yc)
-        dl = 2.3 + i * 0.16
+        dl = 4.8 + i * 0.32
         o.append('<g class="vpl-layer" style="animation-delay:%.2fs">'
                  '<g class="vpl-fac" style="animation-delay:%.2fs">'
                  '<polygon points="%s" fill="#FFD400" fill-opacity=".26"/>'
@@ -82,7 +84,7 @@ def preloader():
                  '<path d="M226 %dH204" stroke="#FFD400" stroke-opacity=".5"/>'
                  '<text class="vpl-lab" x="198" y="%d" text-anchor="end">'
                  '<tspan class="vpl-y">%s</tspan> <tspan>%s</tspan></text></g>'
-                 % (dl, dl + 0.3, top, left, right, outline, dl, yc + 11, yc + 15, labels[i][0], labels[i][1]))
+                 % (dl, dl + 0.6, top, left, right, outline, dl, yc + 11, yc + 15, labels[i][0], labels[i][1]))
     # beat 1: satellite (outer g = final position, inner g = CSS motion)
     o.append('<g transform="translate(300 80)"><g class="vpl-sat">'
              '<rect x="-38" y="-5" width="26" height="10" fill="#0A0A09" stroke="#FFD400" stroke-width="1.5"/>'
@@ -119,8 +121,8 @@ def preloader():
              "if(s||(w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matches)){e.parentNode.removeChild(e);return}"
              "h.classList.add('vpl-lock');var gone=0;"
              "function out(){if(gone)return;gone=1;e.classList.add('vpl-out');"
-             "setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e);h.classList.remove('vpl-lock')},320)}"
-             "setTimeout(function(){if(d.readyState==='complete')out();else{w.addEventListener('load',out);setTimeout(out,400)}},3800)"
+             "setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e);h.classList.remove('vpl-lock')},1340)}"
+             "setTimeout(function(){if(d.readyState==='complete')out();else{w.addEventListener('load',out);setTimeout(out,150)}},8000)"
              "})();</script>")
     return "".join(o)
 

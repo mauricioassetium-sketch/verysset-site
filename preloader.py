@@ -6,10 +6,12 @@ The tiny inline script right after the overlay decides, before first paint, whet
 overlay plays: it is removed at once when this browser session already saw it
 (sessionStorage "vs-preloader-played") or when prefers-reduced-motion is set.
 Visible words are plain SVG <text>, so build.py's i18nize() keys them automatically.
-Timeline (8s intro): beat 1 earth + satellite 0.0-2.0s, beat 2 scan + trust score 2.0-4.8s,
-beat 3 twin + chips 4.8-7.0s, beat 4 hold to 8.0s. Exit: the overlay rises bottom to top
-(translateY(-100%), 1.3s) and is removed; waits at most 150ms for window load, so it is
-gone by ~9.5s.
+Timeline (8s intro): beat 1 earth + satellite 0.0-2.0s, beat 2 scan + trust score 2.0-4.8s
+(a 6px yellow underline sweeps in under the locked score at 4.8s), beat 3 twin + chips 4.8-7.0s,
+beat 4 hold to 7.7s. Exit: at 7.7s the score underline lifts off the counter and stretches into
+the 6px curtain edge bar (.vpl-bar: a FLIP from the underline's measured rect to full width on the
+overlay's bottom edge, 0.5s); from 8.0s the overlay rises bottom to top carrying that bar
+(translateY(-100%), 1.3s) and is removed. Waits at most 150ms for window load, so it is gone by ~9.5s.
 """
 
 # ground verification points: (x, y, delay seconds), synced to the linear beam sweep
@@ -24,6 +26,9 @@ GLYPHS = [
     "M-5 0q2.5-4 5 0t5 0M-5 3q2.5-4 5 0t5 0",           # IR heat wave
 ]
 
+# score underline (x, y, w, h), the "93" advance box; the curtain bar starts from this exact rect
+UL = (573, 115, 87, 6)
+
 COUNTS = [("0", 0.0), ("12", 2.17), ("34", 2.86), ("58", 3.46), ("79", 4.09), ("93", 4.71)]
 
 
@@ -31,9 +36,9 @@ def _iso(yc, hw=75, hh=30, t=22, cx=305):
     top = "%d,%d %d,%d %d,%d %d,%d" % (cx - hw, yc, cx, yc - hh, cx + hw, yc, cx, yc + hh)
     left = "%d,%d %d,%d %d,%d %d,%d" % (cx - hw, yc, cx, yc + hh, cx, yc + hh + t, cx - hw, yc + t)
     right = "%d,%d %d,%d %d,%d %d,%d" % (cx, yc + hh, cx + hw, yc, cx + hw, yc + t, cx, yc + hh + t)
-    outline = ("M%d %dL%d %dL%d %dL%d %dZM%d %dV%dL%d %dV%dM%d %dV%d"
+    outline = ("M%d %dL%d %dL%d %dL%d %dZM%d %dV%dL%d %dL%d %dV%dM%d %dV%d"
                % (cx - hw, yc, cx, yc - hh, cx + hw, yc, cx, yc + hh,
-                  cx - hw, yc, yc + t, cx, yc + hh + t, yc, cx, yc + hh, yc + hh + t))
+                  cx - hw, yc, yc + t, cx, yc + hh + t, cx + hw, yc + t, yc, cx, yc + hh, yc + hh + t))
     return top, left, right, outline
 
 
@@ -105,24 +110,30 @@ def preloader():
             anim = ('animation:vpl-show 1ms linear %.2fs both,vpl-hide 1ms linear %.2fs forwards'
                     % (dl, COUNTS[n + 1][1]))
         o.append('<text class="vpl-num" x="660" y="104" text-anchor="end" style="%s">%s</text>' % (anim, num))
-    o.append('<g class="vpl-ok"><path d="M648 121l5 5 8-10" fill="none" stroke="#FFD400" stroke-width="2.2" '
+    o.append('<rect class="vpl-ul" x="%d" y="%d" width="%d" height="%d" fill="#FFD400"/>' % UL)
+    o.append('<g class="vpl-ok"><path d="M648 141l5 5 8-10" fill="none" stroke="#FFD400" stroke-width="2.2" '
              'stroke-linecap="round" stroke-linejoin="round"/>'
-             '<text class="vpl-cap vpl-y" x="640" y="126" text-anchor="end">VERIFIED</text></g></g>')
+             '<text class="vpl-cap vpl-y" x="640" y="146" text-anchor="end">VERIFIED</text></g></g>')
     # chips
     o.append('<g class="vpl-chip vpl-c1"><rect x="96" y="392" width="228" height="28" rx="14" fill="#0A0A09" '
              'stroke="#FFD400" stroke-opacity=".6"/><text class="vpl-mono" x="210" y="410" text-anchor="middle" '
              'data-noi18n>SHA-256 · 9f2a…c1de</text></g>')
     o.append('<g class="vpl-chip vpl-c2"><rect x="340" y="392" width="244" height="28" rx="14" fill="#FFD400"/>'
              '<text class="vpl-cap vpl-dk" x="462" y="410" text-anchor="middle">REGISTERED ON DLT</text></g>')
-    o.append('</svg></div>')
+    o.append('</svg><i class="vpl-bar"></i></div>')
     o.append("<script>(function(){var d=document,h=d.documentElement,e=d.getElementById('vs-preloader'),"
              "k='vs-preloader-played',s=null,w=window;"
              "try{s=w.sessionStorage.getItem(k);w.sessionStorage.setItem(k,'1')}catch(x){}"
              "if(s||(w.matchMedia&&w.matchMedia('(prefers-reduced-motion: reduce)').matches)){e.parentNode.removeChild(e);return}"
              "h.classList.add('vpl-lock');var gone=0;"
-             "function out(){if(gone)return;gone=1;e.classList.add('vpl-out');"
-             "setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e);h.classList.remove('vpl-lock')},1340)}"
-             "setTimeout(function(){if(d.readyState==='complete')out();else{w.addEventListener('load',out);setTimeout(out,150)}},8000)"
+             "function out(){if(gone)return;gone=1;"
+             # FLIP: park the 6px bar exactly on the score underline, CSS then carries it to the bottom edge
+             "try{var u=e.querySelector('.vpl-ul').getBoundingClientRect(),W=e.clientWidth,H=e.clientHeight,st=e.style;"
+             "if(u.width&&W){st.setProperty('--bx',u.left+'px');st.setProperty('--by',(u.top-H+6)+'px');"
+             "st.setProperty('--sx',u.width/W);st.setProperty('--sy',u.height/6);e.querySelector('.vpl-bar').offsetWidth}}catch(x){}"
+             "e.classList.add('vpl-out');"
+             "setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e);h.classList.remove('vpl-lock')},1640)}"
+             "setTimeout(function(){if(d.readyState==='complete')out();else{w.addEventListener('load',out);setTimeout(out,150)}},7700)"
              "})();</script>")
     return "".join(o)
 

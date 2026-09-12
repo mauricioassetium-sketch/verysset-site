@@ -182,6 +182,7 @@
     "designed-to-coexist-with-frameworks-such-as.9a5e":["Designed to coexist with frameworks such as","Diseñado para coexistir con marcos como","Concebido para coexistir com quadros como","旨在与以下框架共存：","Разработано для сосуществования с такими рамками, как","مصمم للتعايش مع أطر مثل"],
     "detail-crop.8f3a":["Detail crop","Detail crop","Detail crop","Detail crop","Detail crop","Detail crop"],
     "difc-tower-portfolio.be3e":["DIFC tower portfolio","Cartera de torres DIFC","Carteira de torres DIFC","DIFC 大厦资产组合","Портфель башен DIFC","محفظة أبراج DIFC"],
+    "digital-twin.e906":["Digital twin","Gemelo digital","Gémeo digital","数字孪生","Цифровой двойник","التوأم الرقمي"],
     "direct.fd1d":["Direct","Directo","Direto","直接联系","Напрямую","مباشر"],
     "dlt-registration.c417":["DLT registration","Registro en DLT","Registo em DLT","DLT 登记","Регистрация в DLT","التسجيل على DLT"],
     "does-not-assume-fiduciary-risk-or-financial.ee18":["Does not assume fiduciary risk or financial responsibilities.","No asume riesgo fiduciario ni responsabilidades financieras.","Não assume risco fiduciário nem responsabilidades financeiras.","不承担受托风险或财务责任。","Не принимает фидуциарный риск и финансовую ответственность.","لا يتحمّل مخاطر ائتمانية أو مسؤوليات مالية."],
@@ -277,6 +278,7 @@
     "full-name.f11b":["Full name","Nombre completo","Nome completo","全名","Полное имя","الاسم الكامل"],
     "functional-separation.52f4":["Functional separation","Separación funcional","Separação funcional","职能分离","Функциональное разделение","الفصل الوظيفي"],
     "gauteng-south-africa.00ab":["Gauteng, South Africa","Gauteng, Sudáfrica","Gauteng, África do Sul","南非豪登省","Гаутенг, ЮАР","خاوتينغ، جنوب أفريقيا"],
+    "generated-from-verification-layer-by-layer.ea93":["Generated from verification, layer by layer.","Generado a partir de la verificación, capa a capa.","Gerado a partir da verificação, camada a camada.","由验证生成，逐层构建。","Создаётся из верификации, слой за слоем.","يُولَّد من التحقق، طبقة تلو الأخرى."],
     "generation-to-grid.0c59":["Generation to grid","De la generación a la red","Da geração à rede","从发电到电网","От генерации до сети","من التوليد إلى الشبكة"],
     "geo-locked.a211":["Geo locked","Geobloqueado","Geobloqueado","地理锁定","Геопривязка","مقفل جغرافياً"],
     "geo-sentinel-establishes-what-happened-and-whe.e6b3":["Geo Sentinel establishes what happened and where. Aura decides whether the record holds. Pedigree keeps the whole history and turns it into a score an institution can act on.","Geo Sentinel establece qué ocurrió y dónde. Aura decide si el registro se sostiene. Pedigree conserva toda la historia y la convierte en una puntuación sobre la que una institución puede actuar.","O Geo Sentinel estabelece o que aconteceu e onde. O Aura decide se o registo se sustenta. O Pedigree guarda todo o histórico e transforma-o numa pontuação sobre a qual uma instituição pode agir.","Geo Sentinel 确定发生了什么以及发生在何处。Aura 判断该记录是否成立。Pedigree 保存完整历史，并将其转化为机构可据以行动的评分。","Geo Sentinel устанавливает, что произошло и где. Aura определяет, выдерживает ли запись проверку. Pedigree хранит всю историю и превращает её в оценку, на основании которой институт может действовать.","يحدد Geo Sentinel ما حدث وأين حدث. ويقرر Aura ما إذا كان السجل صامداً. ويحتفظ Pedigree بالتاريخ الكامل ويحوّله إلى درجة يمكن للمؤسسة أن تتصرف بناءً عليها."],
@@ -1019,6 +1021,19 @@
       counters.forEach(function (c) { cio.observe(c); });
     }
   }
+
+  /* ---------- digital twin module (institutions): assembles once on first view, then idles ----------
+     No JS or reduced motion: the markup already is the final composed twin. .tw-arm parks every
+     animation at frame 0, .tw-play runs them, .tw-off pauses the idle blink while off screen. */
+  if (!RM && 'IntersectionObserver' in w) qa('[data-twin]').forEach(function (tw) {
+    tw.classList.add('tw-arm');
+    new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) tw.classList.add('tw-play');
+        tw.classList.toggle('tw-off', !e.isIntersecting);
+      });
+    }, { threshold: 0.35 }).observe(tw.querySelector('.tw-svg') || tw);
+  });
 
   /* ---------- live verified assets counter (hero strip) ----------
      value = base + step * floor((now - anchor) / interval), in US$ millions, UTC based,

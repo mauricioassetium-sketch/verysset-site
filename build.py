@@ -4,6 +4,8 @@
 # Rule: no em dash anywhere in the output. Hyphens only.
 
 import preloader
+import twin
+import skyline
 import os, re, io, json, html, hashlib
 import mapgen
 import i18n_cat
@@ -667,6 +669,20 @@ MARKET_STATS = [
 ]
 
 
+# RWA & Tokenization leads every mandate list (operator, 2026-09-13). MARKETS, MARKET_STATS and
+# MARKET_ICONS are index aligned, so they move together; numbering is reissued 01..12 afterwards.
+MARKET_LEAD = 2
+
+
+def _lead_first(seq, i):
+    return [seq[i]] + seq[:i] + seq[i + 1:]
+
+
+MARKETS = [("%02d" % (k + 1), t, dsc) for k, (_, t, dsc) in enumerate(_lead_first(MARKETS, MARKET_LEAD))]
+MARKET_STATS = _lead_first(MARKET_STATS, MARKET_LEAD)
+MARKET_ICONS = _lead_first(MARKET_ICONS, MARKET_LEAD)
+
+
 def market_stats_attr(i):
     """Pack a mandate's stat blocks into one data attribute the panel script unpacks."""
     for v, l in MARKET_STATS[i]:
@@ -695,6 +711,8 @@ SERVICES = [
     ("05", "Verification as a Service", "Recurring verification adapted to the criticality and frequency required by each asset."),
     ("06", "RWA anchoring &amp; tokenization", "Linking tokenized assets to their verifiable digital twin for measurable trust."),
 ]
+# RWA anchoring & tokenization leads the service stack too (same operator request), renumbered 01..06.
+SERVICES = [("%02d" % (k + 1), h, p2) for k, (_, h, p2) in enumerate(_lead_first(SERVICES, 5))]
 
 FAQS = [
     ("What is the asset trust score?",
@@ -1042,15 +1060,15 @@ def build_index():
     b.append('<div class="rv"><span class="eb">Explore</span><h2 class="t">Everything, one page at a time.</h2></div>')
     b.append('<div class="g3 mt">')
     for i, (href, kn, t, p) in enumerate([
+        ("tokenization.html", "RWA", "Tokenization", "Ingest, score and anchor: the process line that links instruments to evidence."),
         ("how-it-works.html", "Platform", "How it works", "Structured ingestion, continuous verification, custody and scoring, plus the full service stack."),
         ("engines.html", "Technology", "The three engines", "Geo Sentinel, the Aura Verification Engine and the Pedigree Engine in detail."),
         ("institutions.html", "Institutions", "Validation and audit", "Validation criteria, Big 4 audited digital twins and the continuous Trust Score."),
         ("markets.html", "Mandates", "Twelve markets", "One verification infrastructure applied across every class of institutional capital."),
-        ("tokenization.html", "RWA", "Tokenization", "Ingest, score and anchor: the process line that links instruments to evidence."),
         ("compliance.html", "Legal", "Compliance and DIFC", "Neutral by design, DIFC incorporated, aligned with MiCA, MAS, VARA and FATF."),
     ]):
-        b.append('<a class="kcard rv" data-i="%d" href="%s"><span class="kn">%s</span><h3>%s</h3><p>%s</p>'
-                 '<span class="go">Open <span>&rarr;</span></span></a>' % (i % 3, href, kn, t, p))
+        b.append('<a class="kcard%s rv" data-i="%d" href="%s"><span class="kn">%s</span><h3>%s</h3><p>%s</p>'
+                 '<span class="go">Open <span>&rarr;</span></span></a>' % (" lead" if i == 0 else "", i % 3, href, kn, t, p))
     b.append('</div>')
     # ARADINA Technology credit: sits in the LAST gray box of the home page (this Explore band, #f8f8f8).
     # Proper noun, so data-noi18n keeps it static in every locale. Black ink on gray, external link.
@@ -1123,7 +1141,8 @@ def build_how():
              'institutional interoperability of real world assets.</p></div></div>')
     b.append('<div class="slist mt">')
     for i, (n, h, p2) in enumerate(SERVICES):
-        b.append('<div class="s rv" data-i="%d"><span class="sn">%s</span><h4>%s</h4><p>%s</p></div>' % (min(i, 6), n, h, p2))
+        b.append('<div class="s%s rv" data-i="%d"><span class="sn">%s</span><h4>%s</h4><p>%s</p></div>'
+                 % (" lead" if i == 0 else "", min(i, 6), n, h, p2))
     b.append('</div></div></section>')
 
     b.append(cta("From static snapshots to live, measurable trust.",
@@ -1243,6 +1262,8 @@ def build_institutions():
              '</ol>'
              '<div class="ia-src"><span class="ia-srl">Verification modes include</span><ul class="ia-modes">' +
              "".join('<li>%s</li>' % vm for vm in VERIFY_MODES) + '</ul></div></div>')
+    # animated digital twin, its own module below the Trust Score card (twin.py)
+    b.append(twin.module())
     b.append('</div></section>')
 
     b.append('<section class="sec"><div class="wrap"><div class="g2b">')
@@ -1274,10 +1295,10 @@ def build_markets():
     b.append('<div class="mlist rv" role="tablist" aria-label="Institutional mandates"><span class="mind" aria-hidden="true"></span>')
     for i, (n, t, dsc) in enumerate(MARKETS):
         i18n_reg(t, "markets.html"); i18n_reg(dsc, "markets.html")
-        b.append('<button class="mb" role="tab" id="mkb%d" aria-selected="%s" aria-controls="mk-panel" '
+        b.append('<button class="mb%s" role="tab" id="mkb%d" aria-selected="%s" aria-controls="mk-panel" '
                  'data-n="%s" data-t="%s" data-d="%s" data-stats="%s">'
                  '<span class="mi">%s</span>%s<span class="mbt">%s</span></button>'
-                 % (i, "true" if i == 0 else "false", n, t, dsc, market_stats_attr(i),
+                 % (" lead" if i == 0 else "", i, "true" if i == 0 else "false", n, t, dsc, market_stats_attr(i),
                     n, market_icon(i), t))
     b.append('</div>')
     b.append('<div class="mpan rv" data-i="1" id="mk-panel" role="tabpanel" aria-live="polite">'
@@ -1292,6 +1313,12 @@ def build_markets():
     b.append('<div class="rv"><span class="eb">All mandates</span><h2 class="t">Twelve markets, one evidence standard.</h2></div>')
     b.append('<div class="g3 mt">')
     for i, (n, t, dsc) in enumerate(MARKETS):
+        if i == 0:
+            # the lead mandate (RWA & Tokenization): a 2x2 near-black card that also carries its stat blocks
+            b.append('<div class="card lead rv"><div class="lead-h"><span class="mkic sm" aria-hidden="true">%s</span>'
+                     '<span class="kn mono">Mandate %s</span><h3>%s</h3><p>%s</p></div>'
+                     '<div class="mstats">%s</div></div>' % (market_icon(i), n, t, dsc, market_stats_html(i)))
+            continue
         b.append('<div class="card rv" data-i="%d"><div class="rule"></div>'
                  '<span class="mkic sm" aria-hidden="true">%s</span>'
                  '<span class="kn mono" style="font-size:10.5px;letter-spacing:.14em;color:var(--faint)">Mandate %s</span>'
@@ -1409,7 +1436,8 @@ def build_compliance():
              'It is a verification and evidence custody layer, neutral to counterparties, chains and jurisdictions by design.</p>')
     b.append('</div></section>')
 
-    b.append('<section class="sec alt" id="jurisdiction"><div class="wrap"><div class="g2b">')
+    # Dubai skyline backdrop behind the incorporation block (skyline.py, decorative, aria-hidden)
+    b.append('<section class="sec alt skysec" id="jurisdiction">' + skyline.svg() + '<div class="wrap"><div class="g2b">')
     b.append('<div class="rv"><span class="eb">Jurisdiction</span><h2 class="t w">Dubai incorporated. Jurisdiction agnostic.</h2>'
              '<div class="frames"><span class="fr">MiCA (EU)</span><span class="fr">MAS (Singapore)</span>'
              '<span class="fr">VARA (Dubai)</span><span class="fr">FATF</span><span class="fr">ISO 20022</span></div></div>')

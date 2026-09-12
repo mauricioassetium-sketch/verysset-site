@@ -175,6 +175,32 @@ def ring(cam, lp, x, y, z, r, turn, segs, dash, pulse_cls, dots=1, width=4.2):
     return "".join(o)
 
 
+def stream(lp, phase, dx, dy, laps=1, edge=.1, eps=.02):
+    """Conveyor part for a continuous stream. The markup draws the part at fraction `phase` of its ride;
+       the ride runs from (-phase*dx, -phase*dy) to ((1-phase)*dx, (1-phase)*dy) in screen px, `laps` times
+       per cycle, fading in over the first `edge` of the ride and out over the last, then jumping home unseen.
+       Returns (class, arrival times): the times the part reaches the end of its ride."""
+    ride = lp.T / laps
+    st = lambda f: "opacity:%s;transform:translate(%spx,%spx)" % (
+        "1" if edge <= f <= 1 - edge else n(max(0.0, min(f, 1 - f)) / edge, 3), n((f - phase) * dx), n((f - phase) * dy))
+    ev, arr = [(0.0, st(phase % 1.0))], []
+    for m in (0.0, edge, 1 - edge):
+        for j in range(laps + 1):
+            t = ((m - phase) % 1.0 + j) * ride
+            if t <= 1e-6 or t >= lp.T - 1e-6:
+                continue
+            if m == 0.0:
+                arr.append(t)
+                ev.append((t, st(1.0)))
+                if t + eps < lp.T:
+                    ev.append((t + eps, st(0.0)))
+            else:
+                ev.append((t, st(m)))
+    ev.sort(key=lambda e: e[0])
+    ev.append((lp.T, st(phase % 1.0) if phase % 1.0 > 1e-6 else st(1.0)))
+    return lp.frames(ev, "linear"), sorted(arr)
+
+
 def sparkle(x, y, s=1.0, cls=""):
     """Four point glint at (x, y); the class (if any) sits on an inner group so it can pop in place."""
     q = lambda v: n(v * s)

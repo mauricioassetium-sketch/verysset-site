@@ -1,120 +1,169 @@
 # -*- coding: utf-8 -*-
-"""Evidence stream, looping (institutions.html, "Jurisdiction ready / Evidence that survives a supervisor.").
+"""Evidence that survives a supervisor, looping (institutions.html, "Jurisdiction ready").
 
-One flat inline SVG on near-black. Three evidence sources (sensor signal, physical condition, legal
-record) stream packets into the Verysset core; the core writes each verified record onto a rising
-ledger chain; then a supervisor lens inspects the chain block by block, every record holds, and a
-shield seal closes the cycle. Loop 10s (loopkit.py):
-  0.4 / 1.0 / 1.6s and 3.4 / 4.0 / 4.6s  source packets reach the core (each source flashes as it emits)
-  2.3 / 5.4s  scan ring around the core base; the floating core bobs throughout
-  2.45-4.8s  a record packet runs up the chain, verifying blocks at 2.8 / 3.25 / 3.7 / 4.15 / 4.6s
-  5.6-8.4s  supervisor lens passes over every check (rings at 5.9 .. 7.9s), 8.3s shield seal
-  9.1-9.6s  checks and seal clear, 10s loop
-Reduced motion or no CSS animation: every block verified, every check and the seal shown, no lens.
+Round 7, dark 3D (dark3d.py), the same language as the digital twin on how-it-works: a black
+platform on a near-black metallic panel, split by a raised wall into two lanes. The operations
+lane (neutral white) carries operational records past, behind the wall, and never reaches custody.
+The evidence lane (#FFD400) carries a continuous stream of records into a floating evidence stack,
+three matte black ledger slabs wrapped in three concentric glowing rings. A supervisor scan then
+rises through the stack and a seal confirms the history holds. Flat SVG, stepped opacity glow, no
+gradients or filters. Loop 10s, every part on one cycle (loopkit.py):
+  0-10s     evidence records ride their lane twice per cycle (a record lands every 1.67s, the
+            stack rim flashes on each landing); operations records ride once, behind the wall
+  0-10s     rings turn (inner and outer clockwise, middle counter clockwise), particles orbit
+  0.8 / 5.8s  ring glow pulses outward, inner to outer, 0.5s apart
+  0-10s     the stack bobs twice (up at 2.5 / 7.5s), the light pool dims as it rises
+  6.0-8.0s  supervisor scan frame rises through the three slabs
+  8.05s     seal pops above the stack with a sparkle, clears 9.3-9.7s
+Reduced motion or no CSS animation: records spread along both lanes, rings lit, seal shown, no scan.
 """
 import loopkit as lk
+import dark3d as d3
 
 T = 10.0
-Y, D, K, W = "#FFD400", "#E6BF00", "#0A0A09", "#fff"
-EXIT = (9.1, 9.6)
-SRC_Y = [88, 170, 252]
-CORE = (270, 196)
-CHAIN0, CSTEP, CHW, CHH, CT = (362, 250), (34, -17), 16, 8, 14
-VERIFY = [2.8 + .45 * k for k in range(5)]
-INSPECT = [5.9 + .5 * k for k in range(5)]
-ICONS = [
-    "M38 {y}H44L47.5 {a}L52 {b}L56 {c}L58 {y}H64",
-    "M42 {e}C42 {f} 50 {g} 61 {g}C61 {h} 55 {e} 42 {e}ZM42 {e}L53 {i}",
-    "M51 {g}L60 {j}V{k}C60 {l} 56 {m} 51 {n}C46 {m} 42 {l} 42 {k}V{j}ZM47 {o}L50 {p}L55.5 {q}",
-]
+Y, K, W = d3.Y, d3.K, d3.W
+VW, VH = 600, 400
+CAM = d3.Cam(290, 212, yaw=24, sp=.45)
+PX, PY0, PY1, PT = 226, -134, 92, 22          # platform: half length (world x), y span, thickness
+X0 = -196                                     # both lanes start at the intake gates
+OPS_Y, OPS_HW, OPS_X1 = -100, 17, 206         # operations lane, runs the full length behind the wall
+WALL_Y = -66
+EV_Y, EV_HW, EV_X1 = 12, 26, 118              # evidence lane, ends under the stack
+STACK, SH, CROT = (140, 12), 42, 16           # evidence stack centre, half size, extra turn
+SLABS = [(54, 70), (78, 94), (102, 118)]      # ledger slabs, z ranges (light gap between them)
+ZR = 26                                       # ring plane
+RINGS = [(64, 360, 4, .17, 2), (84, -360, 3, .28, 1), (104, 360, 2, .1, 2)]
+BOB = 7
+PULSE = [.8, 5.8]
+EV_PHASE = [.12, .45, .78]                    # 3 records, 2 laps: one landing every 1.67s
+OPS_PHASE = [.08, .28, .48, .68, .88]         # 5 records, 1 lap
+SCAN = (6.0, 8.0)
+SEAL = 8.05
+EXIT = (9.3, 9.7)
 
 
-def _icon(i, y):
-    n = lk.num
-    return ICONS[i].format(y=y, a=n(y - 8), b=n(y + 9), c=n(y - 4), e=n(y + 9), f=n(y - 4), g=n(y - 10), h=n(y + 1),
-                           i=n(y - 2), j=n(y - 6.5), k=n(y + 1), l=n(y + 6), m=n(y + 9.5), n=n(y + 11), o=n(y + .5),
-                           p=n(y + 3.5), q=n(y - 2.5))
+def _strip(x0, x1, y, hw):
+    p = CAM.p
+    return [p(x0, y - hw), p(x1, y - hw), p(x1, y + hw), p(x0, y + hw)]
 
 
-def _box(cx, yc, hw, hh, t, tints=(".14", ".05", ".09"), stroke_op=".5"):
-    top, left, right, outline = lk.iso(cx, yc, hw, hh, t)
-    return ('<polygon points="%s %s %s" fill="%s"/><polygon points="%s" fill="%s" fill-opacity="%s"/>'
-            '<polygon points="%s" fill="%s" fill-opacity="%s"/><polygon points="%s" fill="%s" fill-opacity="%s"/>'
-            '<path d="%s" stroke="%s" stroke-opacity="%s"/>'
-            % (top, left, right, K, top, W, tints[0], left, W, tints[1], right, W, tints[2], outline, W, stroke_op))
+def _label(x, y, text, color, op):
+    """Upright label skewed along the lanes, anchored on the platform at world (x, y)."""
+    sx, sy = CAM.p(x, y)
+    return ('<text transform="matrix(1 %s 0 1 %s %s)" fill="%s" fill-opacity="%s" font-size="12" font-weight="600" '
+            'letter-spacing="2.4">%s</text>' % (lk.num(CAM.s * CAM.sp / CAM.c, 3), lk.num(sx), lk.num(sy), color, op, text))
 
 
 def svg():
-    lp = lk.Loop("js", T, "institutions: jurisdiction evidence stream, loop %gs" % T)
-    n = lk.num
-    o = ['<svg fill="none" class="lps" viewBox="0 0 560 340" role="img" '
-         'aria-label="Jurisdictional alignment of the Verysset verification layer" focusable="false">']
-    o.append('<path d="%s" stroke="%s" stroke-opacity=".08" stroke-width="2"/>'
-             % ("".join("M%d %dh0" % (x, y) for x in range(20, 560, 36) for y in range(22, 340, 36)), W))
+    lp = lk.Loop("js", T, "institutions: jurisdiction evidence stream, dark 3D, loop %gs" % T)
+    n, p = lk.num, CAM.p
+    o = ['<svg fill="none" class="lps" viewBox="0 0 %d %d" role="img" '
+         'aria-label="Jurisdictional alignment of the Verysset verification layer: evidence and operations kept in '
+         'separate lanes" focusable="false">' % (VW, VH)]
+    o.append(d3.panel(VW, VH, seams=((200, 400), (133, 267))))
+    scx, scy = p(STACK[0], STACK[1], 86)
+    o.append(d3.halo(scx, scy + 20))
 
-    # evidence sources and their streams into the core
-    cx, cy = CORE
-    for i, y in enumerate(SRC_Y):
-        o.append('<path d="M82 %dL%d %d" stroke="%s" stroke-opacity=".16" stroke-dasharray="2 5"/>' % (y, cx - 74, cy, W))
-        o.append('<rect x="28" y="%d" width="46" height="46" rx="6" fill="%s" fill-opacity=".04" stroke="%s" stroke-opacity=".28"/>'
-                 % (y - 23, W, W))
-        o.append('<rect class="%s" x="28" y="%d" width="46" height="46" rx="6" stroke="%s" stroke-width="1.6" opacity="0"/>'
-                 % (lp.flash([.25 + .6 * i, 3.25 + .6 * i], 1, .12, .7), y - 23, Y))
-        o.append('<path d="%s" stroke="%s" stroke-opacity=".85" stroke-width="1.5"/>' % (_icon(i, y), W))
-        o.append('<circle class="%s" cx="82" cy="%d" r="3.6" fill="%s" opacity="0"/>'
-                 % (lp.moves([(.4 + .6 * i, .9), (3.4 + .6 * i, .9)], cx - 74 - 82, cy - y), y, Y))
+    # platform
+    plat = d3.Box(CAM, 0, (PY0 + PY1) / 2.0, PX, (PY1 - PY0) / 2.0, -PT, 0)
+    o.append(plat.svg(tint=(".045", ".03", ".014"), edge=".16", top_edge=".26"))
+    inset = d3.Box(CAM, 0, (PY0 + PY1) / 2.0, PX - 14, (PY1 - PY0) / 2.0 - 14, 0, 0)
+    o.append('<path d="%s" stroke="%s" stroke-opacity=".06"/>' % (d3.M(inset.top, True), W))
 
-    # the core: base plate, scan ring, floating verification block with the flat yellow mark, orbit
-    o.append(_box(cx, cy, 76, 38, 20))
-    o.append('<ellipse class="%s" cx="%d" cy="%d" rx="76" ry="38" stroke="%s" stroke-width="1.5" opacity="0"/>'
-             % (lp.rings([2.3, 5.4], 1.0, 1.55, .8), cx, cy, Y))
-    o.append('<ellipse cx="%d" cy="150" rx="98" ry="30" stroke="%s" stroke-opacity=".45"/>'
-             '<ellipse cx="%d" cy="150" rx="112" ry="36" stroke="%s" stroke-opacity=".16"/>' % (cx, Y, cx, Y))
-    bob = lp.frames([(0, "transform:translateY(0px)"), (2.5, "transform:translateY(-7px)"), (5, "transform:translateY(0px)"),
-                     (7.5, "transform:translateY(-7px)"), (10, "transform:translateY(0px)")], "ease-in-out")
-    top = lk.iso(cx, 124, 58, 29, 22)[0]
-    mark = lk.iso(cx, 124, 22, 11, 0)[0]
-    o.append('<g class="%s">%s<polygon points="%s" fill="%s"/><polygon points="%s" fill="%s" fill-opacity=".0"/></g>'
-             % (bob, _box(cx, 124, 58, 29, 22, (".12", ".05", ".1"), ".7"), mark, Y, top, W))
+    # operations lane: neutral, full length, behind the wall
+    ops = _strip(X0, OPS_X1, OPS_Y, OPS_HW)
+    o.append('<polygon points="%s" fill="%s" fill-opacity=".025"/><path d="%s%s" stroke="%s" stroke-opacity=".14"/>'
+             '<path d="%s" stroke="%s" stroke-opacity=".1" stroke-dasharray="3 7"/>'
+             % (d3.P(ops), W, d3.M(ops[:2]), d3.M(ops[2:]), W, d3.M([p(X0, OPS_Y), p(OPS_X1, OPS_Y)]), W))
+    o.append(d3.Box(CAM, X0 - 10, OPS_Y, 4, OPS_HW + 6, 0, 30).svg(tint=(".1", ".06", ".03"), edge=".24", top_edge=".4"))
+    dx, dy = p(OPS_X1 - 24, 0)[0] - p(X0 + 12, 0)[0], p(OPS_X1 - 24, 0)[1] - p(X0 + 12, 0)[1]
+    for ph in OPS_PHASE:
+        cls, _ = d3.stream(lp, ph, dx, dy, laps=1)
+        x = X0 + 12 + ph * (OPS_X1 - X0 - 36)
+        o.append('<g class="%s">%s</g>' % (cls, d3.Box(CAM, x, OPS_Y, 13, 9, 0, 5).svg(
+            tint=(".2", ".1", ".06"), edge=".3", top_edge=".5")))
 
-    # ledger chain, back to front
-    (x0, y0), (sx, sy) = CHAIN0, CSTEP
-    blocks = [(x0 + sx * k, y0 + sy * k) for k in range(5)]
-    o.append('<path d="M%d %dL%d %d" stroke="%s" stroke-opacity=".35" stroke-dasharray="2 4"/>' % (cx + 72, cy + 12, x0, y0 + CHH, Y))
-    o.append('<path d="M%d %dL%d %d" stroke="%s" stroke-opacity=".2"/>' % (x0, y0 + CHH, blocks[-1][0], blocks[-1][1] + CHH, W))
-    for k in (4, 3, 2, 1, 0):
-        bx, by = blocks[k]
-        o.append(_box(bx, by, CHW, CHH, CT, stroke_op=".45"))
-        o.append('<polygon class="%s" points="%s" fill="%s"/>'
-                 % (lp.win(lk.FADE, VERIFY[k] - .05, VERIFY[k] + .2, *EXIT), lk.iso(bx, by, CHW, CHH, CT)[0], Y))
-    for k, (bx, by) in enumerate(blocks):
-        o.append('<g transform="translate(%d %d)"><circle class="%s" r="7" stroke="%s" stroke-width="1.4" opacity="0"/>'
-                 '<g class="%s"><circle r="7" fill="%s"/><path d="M-3.2 .2l2.1 2.1 4.3-4.5" stroke="%s" stroke-width="1.6"/></g></g>'
-                 % (bx, by - 22, lp.rings([INSPECT[k]], .7, 2.3), W, lp.win(lk.POP, VERIFY[k], VERIFY[k] + .3, *EXIT), Y, K))
+    # the wall: functional separation, operations never cross into custody
+    wall = d3.Box(CAM, (X0 - 16 + PX) / 2.0, WALL_Y, (PX - X0 + 16) / 2.0 - 6, 2.5, 0, 14)
+    o.append(wall.svg(tint=(".12", ".07", ".04"), edge=".22", top_edge=".5"))
 
-    # record packet: core exit, then up the chain
-    sx0, sy0 = cx + 72, cy + 12
-    tr = lambda x, y: "transform:translate(%spx,%spx)" % (n(x - sx0), n(y - sy0))
-    pts = [(0, "opacity:0;" + tr(sx0, sy0)), (2.45, "opacity:0;" + tr(sx0, sy0)), (2.55, "opacity:1;" + tr(sx0, sy0))]
-    pts += [(VERIFY[k], "opacity:1;" + tr(bx, by)) for k, (bx, by) in enumerate(blocks)]
-    pts += [(VERIFY[4] + .2, "opacity:0;" + tr(*blocks[4])), (VERIFY[4] + .25, "opacity:0;" + tr(sx0, sy0))]
-    o.append('<circle class="%s" cx="%d" cy="%d" r="3.6" fill="%s" opacity="0"/>' % (lp.frames(pts, "linear"), sx0, sy0, Y))
+    # evidence lane: warm, ends in the light pooled under the stack
+    ev = _strip(X0, EV_X1, EV_Y, EV_HW)
+    o.append('<polygon points="%s" fill="%s" fill-opacity=".035"/>' % (d3.P(ev), Y))
+    o.append(d3.glow_path(d3.M(ev[:2]) + d3.M(ev[2:]), ((5, ".04"), (2.4, ".1"), (1, ".45"))))
+    o.append('<path d="%s" stroke="%s" stroke-opacity=".3" stroke-width="1.4"/>'
+             % ("".join(d3.M([p(x - 5, EV_Y - 9), p(x + 3, EV_Y), p(x - 5, EV_Y + 9)]) for x in range(-150, 80, 46)), Y))
+    gate = d3.Box(CAM, X0 - 10, EV_Y, 4, EV_HW + 6, 0, 34)
+    o.append(gate.svg(tint=(".1", ".06", ".03"), edge=".24", top_edge=".44") + gate.warm(rim=False))
+    dim = lp.frames([(0, "opacity:1"), (2.5, "opacity:.7"), (5, "opacity:1"), (7.5, "opacity:.7"), (10, "opacity:1")],
+                    "ease-in-out")
+    o.append(d3.pool(CAM, STACK[0], STACK[1], 0, cls=dim))
+    dx, dy = p(EV_X1 - 8, 0)[0] - p(X0 + 12, 0)[0], p(EV_X1 - 8, 0)[1] - p(X0 + 12, 0)[1]
+    landings = []
+    for ph in EV_PHASE:
+        cls, arr = d3.stream(lp, ph, dx, dy, laps=2)
+        landings += arr
+        x = X0 + 12 + ph * (EV_X1 - X0 - 20)
+        rec = d3.Box(CAM, x, EV_Y, 16, 12, 0, 7)
+        mark = d3.Box(CAM, x, EV_Y, 6, 5, 7, 7).top
+        o.append('<g class="%s">%s%s<polygon points="%s" fill="%s"/></g>'
+                 % (cls, rec.svg(tint=(".12", ".06", ".03"), edge=".3", top_edge=".2"),
+                    d3.glow_path(d3.M(rec.top, True), ((4, ".08"), (2, ".2"), (1, ".8"))), d3.P(mark), Y))
+    landings.sort()
 
-    # supervisor lens: passes over every check, hidden in the static frame
-    lx0, ly0 = blocks[0][0], blocks[0][1] - 22
-    trl = lambda k: "transform:translate(%spx,%spx)" % (n(sx * k), n(sy * k))
-    lens = [(0, "opacity:0;" + trl(0)), (5.55, "opacity:0;" + trl(0)), (5.85, "opacity:1;" + trl(0))]
-    lens += [(INSPECT[k], "opacity:1;" + trl(k)) for k in range(5)]
-    lens += [(8.25, "opacity:0;" + trl(4)), (8.3, "opacity:0;" + trl(0))]
-    o.append('<g transform="translate(%d %d)"><g class="%s" opacity="0"><circle r="21" stroke="%s" stroke-width="1.8"/>'
-             '<path d="M15 15L27 27" stroke="%s" stroke-width="3.2"/></g></g>' % (lx0, ly0, lp.frames(lens, lk.EASE), W, W))
+    o.append(_label(X0 - 4, EV_Y + EV_HW + 30, "EVIDENCE", Y, ".85"))
+    o.append(_label(X0 + 6, PY0 + 2, "OPERATIONS", W, ".5"))
 
-    # seal: the evidence survived inspection
-    o.append('<g transform="translate(528 104)"><circle class="%s" r="14" stroke="%s" stroke-width="1.5" opacity="0"/>'
-             '<g class="%s"><circle r="14" fill="%s"/><path d="M0 -7.5L6 -5V0C6 3.6 3.4 6 0 7.4C-3.4 6 -6 3.6 -6 0V-5Z'
-             'M-2.6 -.2L-.7 1.8L2.9 -2" stroke="%s" stroke-width="1.5"/></g></g>'
-             % (lp.rings([8.55], 1.0, 2.4), Y, lp.win(lk.POP, 8.3, 8.65, *EXIT), Y, K))
-    o.append('<path d="M%d %dL514 114" stroke="%s" stroke-opacity=".4" stroke-dasharray="2 3"/>' % (blocks[4][0] + 6, blocks[4][1] - 30, Y))
+    # the three rings around the stack (back halves pass behind it, drawn after them)
+    for i, (r, turn, segs, dash, dots) in enumerate(RINGS):
+        pts = [(0, "opacity:.6;transform:scale(1)")]
+        for t0 in PULSE:
+            t = t0 + .5 * i
+            pts += [(t - .3, "opacity:.6;transform:scale(1)"), (t, "opacity:1;transform:scale(1.02)"),
+                    (t + 1.5, "opacity:.6;transform:scale(1)")]
+        o.append(d3.ring(CAM, lp, STACK[0], STACK[1], ZR, r, turn, segs, dash, lp.frames(pts, "ease-out"), dots))
+
+    # the evidence stack: bobbing ledger slabs, supervisor scan, seal
+    bob = lp.frames([(0, "transform:translateY(0px)"), (2.5, "transform:translateY(-%dpx)" % BOB),
+                     (5, "transform:translateY(0px)"), (7.5, "transform:translateY(-%dpx)" % BOB),
+                     (10, "transform:translateY(0px)")], "ease-in-out")
+    o.append('<g class="%s">' % bob)
+    frame = d3.Box(CAM, STACK[0], STACK[1], SH + 12, SH + 12, SLABS[0][0] - 6, SLABS[0][0] - 6, CROT)
+    lift = (SLABS[-1][1] + 8 - (SLABS[0][0] - 6)) * CAM.cp
+    s0, s1 = SCAN
+    scan = lp.frames([(0, "opacity:0;transform:translateY(0px)"), (s0, "opacity:0;transform:translateY(0px)"),
+                      (s0 + .25, "opacity:1;transform:translateY(0px)"),
+                      (s1 - .25, "opacity:1;transform:translateY(-%spx)" % n(lift)),
+                      (s1, "opacity:0;transform:translateY(-%spx)" % n(lift)),
+                      (s1 + .05, "opacity:0;transform:translateY(0px)")], "linear")
+    front = frame.top_front()
+    back =[front[2]] + [q for q in frame.top if q not in front] + [front[0]]
+    o.append('<g class="%s" opacity="0">%s</g>' % (scan, d3.glow_path(d3.M(back), ((5, ".06"), (2.4, ".14"), (1, ".5")))))
+    rim = lp.flash(landings, .9, .12, .7)
+    for k, (z0, z1) in enumerate(SLABS):
+        slab = d3.Box(CAM, STACK[0], STACK[1], SH, SH, z0, z1, CROT)
+        o.append(slab.svg(tint=(".085", ".05", ".024"), edge=".22", top_edge=".46"))
+        o.append(slab.warm(bands=((0, .16, ".18"), (.16, .4, ".08")), rim=True))
+        if k == 0:
+            o.append('<g class="%s" opacity="0">%s</g>' % (rim, d3.glow_path(slab.bottom_edges(), ((10, ".1"), (5, ".25"), (2, "1")))))
+    top = d3.Box(CAM, STACK[0], STACK[1], SH, SH, SLABS[-1][1], SLABS[-1][1], CROT)
+    seam = d3.Box(CAM, STACK[0], STACK[1], SH - 14, SH - 14, SLABS[-1][1], SLABS[-1][1], CROT)
+    mark = d3.Box(CAM, STACK[0], STACK[1], 12, 12, SLABS[-1][1], SLABS[-1][1], CROT)
+    o.append('<path d="%s" stroke="%s" stroke-opacity=".1"/><polygon points="%s" fill="%s"/>'
+             % (d3.M(seam.top, True), W, d3.P(mark.top), Y))
+    o.append('<g class="%s" opacity="0">%s</g>' % (scan, d3.glow_path(d3.M(front), ((6, ".08"), (3, ".2"), (1.4, ".95")))))
+    ax, ay = top.apex()
+    o.append(d3.sparkle(ax, ay, .9, lp.frames([(0, "opacity:0;transform:scale(0) rotate(0deg)"),
+                                              (SEAL + .15, "opacity:0;transform:scale(0) rotate(0deg)"),
+                                              (SEAL + .4, "opacity:1;transform:scale(1) rotate(45deg)"),
+                                              (SEAL + 1.0, "opacity:0;transform:scale(.3) rotate(90deg)"),
+                                              (SEAL + 1.03, "opacity:0;transform:scale(0) rotate(0deg)")], "ease-out")))
+    o.append('<g transform="translate(%s %s)"><circle class="%s" r="15" stroke="%s" stroke-width="1.5" opacity="0"/>'
+             '<g class="%s"><circle r="22" fill="%s" fill-opacity=".08"/><circle r="15" fill="%s"/>'
+             '<path d="M0 -8L6.4 -5.3V0C6.4 3.8 3.6 6.4 0 7.9C-3.6 6.4 -6.4 3.8 -6.4 0V-5.3Z" fill="%s"/>'
+             '<path d="M-2.8 -.2L-.8 1.9L3 -2.1" stroke="%s" stroke-width="1.6"/></g></g>'
+             % (n(ax + 54), n(ay - 22), lp.rings([SEAL + .2], 1.0, 2.4), Y, lp.win(lk.POP, SEAL, SEAL + .35, *EXIT), Y, Y, K, Y))
+    o.append('</g>')
     o.append('</svg>')
     return "".join(o)
 

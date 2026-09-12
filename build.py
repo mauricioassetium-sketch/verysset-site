@@ -727,6 +727,13 @@ PARTNERS = [
     ("https://www.mercadobitcoin.com.br/", "Mercado Bitcoin", "mercadobitcoin.svg", 34, 74,    74),
     ("https://www.hextrust.com/",          "Hex Trust",       "hextrust.svg",       18, 372.6, 59.7),
     ("https://upay.com/",                  "Upay",            "upay.webp",          26, 240,   64),
+    # evidence layer partners: earth observation, industrial IoT, sensors, audit.
+    # Official marks as vector (assets/real-<slug>.svg, cropped to a tight viewBox).
+    ("https://www.planet.com/",                   "Planet",          "planet.svg",         30, 244.9, 122.1),
+    ("https://www.siemens.com/en-us/",            "Siemens",         "siemens.svg",        22, 199.6, 35.1),
+    ("https://www.bosch-sensortec.com/en",        "Bosch Sensortec", "boschsensortec.svg", 26, 441.7, 105.1),
+    ("https://www.tdk.com/en/index.html",         "TDK",             "tdk.svg",            26, 699.8, 157.7),
+    ("https://www.pwc.in/",                       "PwC India",       "pwcindia.svg",       34, 71.3,  35.2),
 ]
 
 NOCARDS = [
@@ -793,6 +800,11 @@ def partner_grid():
                  'loading="lazy" decoding="async">' % (src, name))
         o.append('</span>')
         o.append('<span class="pname">%s</span></a>' % name)
+    # Closing cell: 14 partners + 1 invitation = 15, so every breakpoint fills its rows
+    # (5 x 3 desktop, 3 x 5 tablet, 2 columns + full width cell on mobile). No gray orphan slot.
+    o.append('<a class="pcell pjoin rv" data-i="6" href="contact.html">'
+             '<span class="pjt"><span class="pje">Your institution</span>'
+             '<span class="pjh">Become a partner</span><i class="pja" aria-hidden="true">&rarr;</i></span></a>')
     o.append('</div>')
     return "".join(o)
 
@@ -1452,18 +1464,19 @@ def build_faq():
 
 def build_partners():
     b = [phead("Partners", "Trusted allies", "Our partners.",
-               "Institutional grade infrastructure, backed by leaders across exchanges, tokenization, capital "
-               "and fund administration.")]
+               "Institutional grade infrastructure, backed by leaders across exchanges, tokenization, capital, "
+               "fund administration, earth observation, industrial sensing and audit.")]
     b.append('<section class="sec"><div class="wrap">')
     b.append(partner_grid())
     b.append('<p class="lede rv" style="margin-top:30px">Each partner operates in its own regulated lane. '
              'Verysset supplies the verification layer they anchor to, and never the intermediation.</p>')
     b.append('</div></section>')
-    b.append('<section class="sec alt"><div class="wrap"><div class="g3">')
+    b.append('<section class="sec alt"><div class="wrap"><div class="g4 plane">')
     for i, (kn, t, p2) in enumerate([
         ("Exchanges &amp; venues", "Verified listings", "Venues anchor listed instruments to a live twin instead of a filing."),
         ("Tokenization platforms", "Mint against truth", "Platforms mint against a score, not a declaration, and keep the lineage."),
         ("Capital &amp; administration", "Lower reconciliation", "Administrators cut exception handling by reading one continuous record."),
+        ("Sensing, imagery &amp; audit", "Evidence at the source", "Earth observation, sensing and audit leaders strengthen the evidence behind every verified twin."),
     ]):
         b.append('<div class="card rv" data-i="%d"><div class="rule"></div>'
                  '<span class="mono" style="font-size:10.5px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase">%s</span>'
@@ -1472,7 +1485,7 @@ def build_partners():
     b.append(cta("Become a Verysset partner.",
                  "If you operate a venue, a platform or an administration stack, the verification layer plugs in behind it."))
     return page("partners.html", "Partners | Verysset",
-                "Institutional grade infrastructure backed by leaders across exchanges, tokenization, capital and fund administration.",
+                "Institutional grade infrastructure backed by leaders across exchanges, tokenization, capital, fund administration, earth observation, industrial sensing and audit.",
                 "".join(b), prev=("faq.html", "FAQ"), nxt=("contact.html", "Contact"))
 
 

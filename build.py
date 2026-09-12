@@ -6,6 +6,8 @@
 import preloader
 import twin
 import skyline
+import loopkit
+import mirror
 import os, re, io, json, html, hashlib
 import mapgen
 import i18n_cat
@@ -1129,9 +1131,8 @@ def build_how():
              '<p class="lede">Every verified event updates the twin. Nothing is re-declared, nothing waits for the next audit '
              'window, and every state the asset has ever been in remains reconstructable.</p>'
              '<div class="mt2"><a class="tl" href="engines.html">See the engines behind it <span class="ar">&rarr;</span></a></div></div>')
-    b.append('<div class="rv" data-i="1" style="border:1px solid var(--line);border-radius:3px;overflow:hidden;background:#fff">'
-             '<img src="assets/twin.webp" alt="Verifiable digital twin of a real world asset" '
-             'style="display:block;width:100%;height:auto" loading="lazy" decoding="async"></div>')
+    # looping digital twin (mirror.py), replaces the static twin.webp
+    b.append('<div class="rv" data-i="1">' + mirror.figure() + '</div>')
     b.append('</div></div></section>')
 
     b.append('<section class="sec" id="services"><div class="wrap">')
@@ -1758,6 +1759,10 @@ if __name__ == "__main__":
     sizes["logo.html"] = build_logo()        # design review page: built, but NOT in NAV
     for k in sorted(sizes):
         print("%-22s %7.1f KB" % (k, sizes[k] / 1024.0))
+    css_loops = loopkit.inject(os.path.join(OUT, "assets", "site.css"))
+    for nm, dur, note in loopkit.durations():
+        print("loop %-4s %5.2fs  %s" % (nm, dur, note))
+    print("loops css block        %7.1f KB" % (css_loops / 1024.0))
     total, full, miss = i18n_report()
     print("-" * 46)
     print("i18n keys              : %d" % total)

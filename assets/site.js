@@ -1035,6 +1035,17 @@
     }, { threshold: 0.35 }).observe(tw.querySelector('.tw-svg') || tw);
   });
 
+  /* ---------- looping illustrations (loopkit.py) ----------
+     The loops are pure CSS and repeat forever. Each [data-loop] is parked at frame 0 (.lp-off) until it
+     scrolls into view and paused again while off screen. No JS: they simply run. Reduced motion: no
+     animation rules apply at all, the markup is the final frame. */
+  if (!RM && 'IntersectionObserver' in w) {
+    var lpio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { e.target.classList.toggle('lp-off', !e.isIntersecting); });
+    }, { rootMargin: '40px 0px 40px 0px', threshold: 0 });
+    qa('[data-loop]').forEach(function (el) { el.classList.add('lp-off'); lpio.observe(el); });
+  }
+
   /* ---------- live verified assets counter (hero strip) ----------
      value = base + step * floor((now - anchor) / interval), in US$ millions, UTC based,
      clamped at the anchor so a client clock set in the past never shows less than the base.

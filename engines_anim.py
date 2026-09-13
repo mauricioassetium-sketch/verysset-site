@@ -16,6 +16,13 @@ Engine 01, Geo Sentinel, loop 8s:
   0.6 / 4.6s  ring glow pulses outward, inner to outer, 0.5s apart
   0-8s      the globe bobs twice (up at 2 / 6s), the light pool dims as it rises
 Reduced motion: sweep parked, pins lit, rings lit, satellite shown in front of the globe.
+
+Engine 02, Aura Verification Engine, loop 8s: four source lanes feed a floating AI chip, a drifting record
+is flagged and rejected at the outer ring, coherence is confirmed twice per cycle (see aura_svg).
+
+Engine 03, Pedigree Engine, loop 8s: a custody chain hands evidence into the core, a sealed block drops and
+locks onto a floating ledger stack, the lineage check runs down the stack, the trust score dial updates,
+then the stack settles one pitch so the cycle closes seamlessly (see pedigree_svg).
 """
 import math
 import loopkit as lk
@@ -542,8 +549,238 @@ def aura_svg():
     return "".join(o)
 
 
+# ---------------------------------------------------------------- engine 03: Pedigree Engine
+# Loop 8s:
+#   0.15-2.05s  an evidence packet is handed along a four node custody chain, each node lights on hand-off,
+#               then the packet enters the core and a beam rises into the ledger
+#   1.95-2.4s   a sealed block appears above the stack and drops onto it; lock flash, ring pulse, padlock pops
+#   2.75-3.65s  the lineage check runs down the stack, newest block to origin block
+#   3.75-4.05s  the result rides to the trust score dial, whose head tick flashes (score recomputed)
+#   6.3-7.6s    the stack settles one pitch down and the origin block is archived into the core, so the
+#               last frame equals the first
+# Reduced motion: four locked blocks, padlock shown, dial lit.
+PED_T = 8.0
+P_CAM = d3.Cam(300, 326, yaw=24, sp=.45)
+P_PLAT, P_PT = 176, 22
+P_ZR = 36
+P_RINGS = [(100, 360, 4, .17, 2), (128, -360, 3, .28, 1), (156, 360, 2, .1, 2)]
+P_PULSE = [2.4, 5.5]
+P_BOB = 6
+P_ROT = 16
+P_BLK, P_BH, P_GAP, P_Z0 = 56, 15, 8, 104      # ledger block half size, height, gap, lowest block base
+P_PITCH = P_BH + P_GAP
+P_NODES = [(292, "key"), (218, "seal"), (146, "doc"), (72, "hand")]   # plane angle, mark: first hand-off to last
+P_HOPS = [(.15, .55), (.7, 1.1), (1.25, 1.65), (1.75, 2.05)]         # packet rides: node to node, then into the core
+P_DROP, P_LOCK = 1.95, 2.4
+P_TRACE = [2.75, 3.05, 3.35, 3.65]             # lineage flash per slot, top slot first
+P_SCORE = (3.75, 4.05)
+P_SHIFT = (6.3, 7.6)
+P_TICKS, P_LIT = 18, 14
+
+
+def _custody_mark(kind):
+    if kind == "key":
+        return ('<circle cx="-3" r="4.5" stroke="%s" stroke-width="1.4"/><path d="M1.5 0H9M6 0V3.5M8.5 0V2.5" stroke="%s" '
+                'stroke-width="1.4"/>' % (Y, Y))
+    if kind == "seal":
+        return ('<circle r="7.5" stroke="%s" stroke-width="1.4"/><path d="M-3.5 .2L-1 2.8L3.8 -2.4" stroke="%s" stroke-width="1.6"/>'
+                % (Y, Y))
+    if kind == "doc":
+        return _tile_mark("doc")
+    return ('<path d="M-8 -2H4L1 -5M8 2H-4L-1 5" stroke="%s" stroke-width="1.4"/>' % Y)
+
+
+def _chain_links(a, b):
+    """Two interlocked links at the middle of a custody hop, aligned with it."""
+    mx, my = (a[0] + b[0]) / 2, (a[1] + b[1]) / 2
+    ang = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
+    return ('<g transform="translate(%s %s) rotate(%s)"><rect x="-10" y="-3.5" width="12" height="7" rx="3.5" fill="%s" '
+            'stroke="%s" stroke-opacity=".6" stroke-width="1.4"/><rect x="-2" y="-3.5" width="12" height="7" rx="3.5" '
+            'stroke="%s" stroke-width="1.4"/></g>' % (n(mx), n(my), n(ang, 1), K, Y, Y))
+
+
+def _ledger_block(cam, z0):
+    """One matte ledger block: warm seam, record lines on the left face, hash ticks on the right, hash mark on top."""
+    b = d3.Box(cam, 0, 0, P_BLK, P_BLK, z0, z0 + P_BH, P_ROT)
+    o = [b.svg(tint=(".09", ".055", ".026"), edge=".24", top_edge=".46")]
+    o.append(b.warm(bands=((0, .3, ".12"),), rim=False))
+    o.append('<path d="%s" stroke="%s" stroke-opacity=".55"/>' % (b.bottom_edges(), Y))
+    for s, i, j in b.faces:
+        ti, tj, bi, bj = b.top[i], b.top[j], b.bot[i], b.bot[j]
+        mid = lambda f: d3.lerp(d3.lerp(ti, bi, .5), d3.lerp(tj, bj, .5), f)
+        if s == "l":
+            o.append('<path d="%s" stroke="%s" stroke-opacity=".3"/>'
+                     % ("".join(d3.M([mid(f0), mid(f1)]) for f0, f1 in ((.1, .38), (.46, .6), (.68, .9))), W))
+        else:
+            o.append('<path d="%s" stroke="%s" stroke-opacity=".6" stroke-width="2"/>'
+                     % ("".join("M%s %sh0" % (n(mid(f)[0]), n(mid(f)[1])) for f in (.14, .26, .38, .5, .62, .74, .86)), Y))
+    tx, ty = cam.p(0, 0, z0 + P_BH)
+    o.append('<g transform="translate(%s %s) scale(1 %s)"><path d="M0 -17L14.7 -8.5V8.5L0 17L-14.7 8.5V-8.5Z" stroke="%s" '
+             'stroke-opacity=".55" stroke-width="1.4"/><circle r="4" fill="%s" fill-opacity=".7"/></g>'
+             % (n(tx), n(ty), n(cam.sp, 3), Y, Y))
+    return b, "".join(o)
+
+
+def pedigree_svg():
+    lp = lk.Loop("ep", PED_T, "engines: pedigree ledger stack, custody chain and trust score, dark 3D, loop %gs" % PED_T)
+    cam = P_CAM
+    sp, cp = cam.sp, cam.cp
+    o = [_open("Pedigree Engine: evidence is handed along a custody chain, sealed into a new ledger block that locks "
+               "onto the verified history, the lineage is checked end to end and the trust score is updated")]
+    o.append(d3.panel(VW, VH, seams=((200, 400), (160, 320))))
+    top_z = P_Z0 + 3 * P_PITCH + P_BH
+    hx, hy = cam.p(0, 0, top_z)
+    o.append(d3.halo(hx, hy + 40))
+    o.append(_platform(cam, P_PLAT, P_PT))
+    o.append(d3.pool(cam, 0, 0, 0, cls=_dim(lp, PED_T)))
+
+    # custody chain: four hand-off nodes on the platform, joined by a dashed chain that ends in the core
+    nodes = []
+    for al, kind in P_NODES:
+        r = 200.0
+        while True:
+            wx, wy = _local_to_world(cam, r, al)
+            if max(abs(wx), abs(wy)) <= P_PLAT - 26:
+                break
+            r -= 2
+        nodes.append((al, kind, wx, wy, cam.p(wx, wy, 0)))
+    core = cam.p(0, 0, 0)
+    stops = [nd[4] for nd in nodes] + [core]
+    for k, (a, b) in enumerate(zip(stops, stops[1:])):
+        steps = ((5, ".03"), (2.2, ".08"), (1, ".32")) if k < 3 else ((4, ".03"), (1.8, ".08"), (1, ".26"))
+        o.append(d3.glow_path(d3.M([a, b]), steps))
+        o.append('<path d="%s" stroke="%s" stroke-opacity=".45" stroke-dasharray="4 7"/>' % (d3.M([a, b]), Y))
+        if k < 3:
+            o.append(_chain_links(a, b))
+    x0, y0 = stops[0]
+    mv = lambda p, op: "opacity:%s;transform:translate(%spx,%spx)" % (op, n(p[0] - x0), n(p[1] - y0))
+    pts = [(0, mv(stops[0], 0)), (P_HOPS[0][0] - .1, mv(stops[0], 0))]
+    for k, (t0, t1) in enumerate(P_HOPS):
+        pts += [(t0, mv(stops[k], 1)), (t1, mv(stops[k + 1], 1))]
+    pts += [(P_HOPS[-1][1] + .08, mv(stops[-1], 0)), (P_HOPS[-1][1] + .11, mv(stops[0], 0))]
+    o.append('<g class="%s" opacity="0"><circle cx="%s" cy="%s" r="8" fill="%s" fill-opacity=".16"/><circle cx="%s" cy="%s" '
+             'r="4.5" fill="%s" fill-opacity=".38"/><rect x="%s" y="%s" width="4.4" height="4.4" fill="%s"/></g>'
+             % (lp.frames(pts), n(x0), n(y0), Y, n(x0), n(y0), Y, n(x0 - 2.2), n(y0 - 2.2), Y))
+
+    arrive = [P_HOPS[0][0]] + [t1 for _, t1 in P_HOPS[:3]]
+    for k, (al, kind, wx, wy, base) in sorted(enumerate(nodes), key=lambda e: e[1][4][1]):
+        post = d3.Box(cam, wx, wy, 14, 14, 0, 22, P_ROT)
+        o.append(post.svg(tint=(".1", ".06", ".03"), edge=".26", top_edge=".46"))
+        o.append(post.warm(bands=((0, .2, ".14"), (.2, .42, ".06")), rim=False))
+        tx, ty = cam.p(wx, wy, 22)
+        o.append('<g transform="translate(%s %s) scale(1 %s)">%s</g>' % (n(tx), n(ty), n(sp, 3), _custody_mark(kind)))
+        o.append('<g class="%s" opacity="0"><circle cx="%s" cy="%s" r="20" fill="%s" fill-opacity=".08"/>'
+                 '<circle cx="%s" cy="%s" r="11" fill="%s" fill-opacity=".18"/></g>'
+                 % (track(lp, [arrive[k]], BLIP_ENV, (0.0,), BLIP_FMT), n(tx), n(ty), Y, n(tx), n(ty), Y))
+
+    # rings, the arrival ping in the core and the beam that carries the sealed record up into the ledger
+    o.append(_pulse_rings(lp, cam, 0, 0, P_ZR, P_RINGS, P_PULSE))
+    o.append(cam.plane(0, 0, 0) + '<circle class="%s" r="14" stroke="%s" stroke-width="1.6" vector-effect="non-scaling-stroke" '
+             'opacity="0"/></g>' % (lp.rings([P_HOPS[-1][1]], .8, 3.4, .85), Y))
+    by = cam.p(0, 0, P_Z0 + 12)[1]
+    o.append('<g class="%s" opacity="0">%s</g>'
+             % (track(lp, [P_HOPS[-1][1] - .05], [(0.0, (0.0,)), (.1, (1.0,)), (.45, (0.0,))], (0.0,), BLIP_FMT),
+                d3.glow_path("M%s %sV%s" % (n(core[0]), n(core[1]), n(by)), ((10, ".08"), (5, ".2"), (2, ".95")))))
+    # the archived origin block sinks into the core at the end of the cycle
+    o.append(cam.plane(0, 0, P_ZR) + '<circle class="%s" r="40" stroke="%s" stroke-width="1.6" vector-effect="non-scaling-stroke" '
+             'opacity="0"/></g>' % (lp.rings([P_SHIFT[1] - .35], .3 + PED_T - P_SHIFT[1] - .05, 2.2, .6), Y))
+
+    # the ledger: four blocks, each in its slot, bobbing together; the stack settles one pitch per cycle
+    o.append('<g class="%s">' % _bob(lp, P_BOB, PED_T))
+    shift = P_PITCH * cp
+    s0, s1 = P_SHIFT
+    rest = "transform:translateY(0px)"
+    down = "transform:translateY(%spx)" % n(shift)
+    lift = P_PITCH * cp * 1.6
+    cls = [lp.frames([(0, "opacity:1;" + rest), (s0, "opacity:1;" + rest), (s1, "opacity:0;" + down)]),
+           lp.frames([(0, rest), (s0, rest), (s1, down)]),
+           lp.frames([(0, rest), (s0, rest), (s1, down)]),
+           lp.frames([(0, "opacity:0;transform:translateY(-%spx)" % n(lift)), (P_DROP, "opacity:0;transform:translateY(-%spx)" % n(lift)),
+                      (P_DROP + .15, "opacity:1;transform:translateY(-%spx)" % n(lift * .8)), (P_LOCK, "opacity:1;" + rest),
+                      (P_LOCK + .08, "opacity:1;transform:translateY(-1.5px)"), (P_LOCK + .2, "opacity:1;" + rest),
+                      (s0, "opacity:1;" + rest), (s1, "opacity:1;" + down)])]
+    blocks = []
+    flash_env = [(0.0, (0.0,)), (.1, (1.0,)), (.55, (0.0,))]
+    for k in range(4):
+        b, svg = _ledger_block(cam, P_Z0 + k * P_PITCH)
+        blocks.append(b)
+        o.append('<g class="%s">%s' % (cls[k], svg))
+        o.append('<g class="%s" opacity="0">%s%s</g>'
+                 % (track(lp, [P_TRACE[3 - k]], flash_env, (0.0,), BLIP_FMT),
+                    d3.glow_path(d3.M(b.top_front()), ((8, ".08"), (4, ".2"), (1.6, ".95"))),
+                    b.warm(bands=((0, .5, ".16"), (.5, 1, ".06")), rim=False)))
+        if k == 3:
+            o.append('<g class="%s" opacity="0">%s</g>'
+                     % (track(lp, [P_LOCK], [(0.0, (0.0,)), (.06, (1.0,)), (.7, (0.0,))], (0.0,), BLIP_FMT),
+                        d3.glow_path(b.bottom_edges(), ((12, ".1"), (6, ".24"), (2.2, "1")))))
+        o.append('</g>')
+
+    # hash links between neighbouring blocks at the visible vertical edges; they step aside while the stack settles
+    # (the top gap only links once the new block has locked, and is empty again when the cycle restarts)
+    link = lp.frames([(0, "opacity:1"), (s0 - .05, "opacity:1"), (s0 + .15, "opacity:0"), (s1 - .05, "opacity:0"), (s1 + .3, "opacity:1")])
+    link_top = lp.frames([(0, "opacity:0"), (P_LOCK, "opacity:0"), (P_LOCK + .15, "opacity:1"), (s0 - .05, "opacity:1"),
+                          (s0 + .15, "opacity:0")])
+    for ks, lcls in ((range(2), link), (range(2, 3), link_top)):
+        lk_d = []
+        for k in ks:
+            lo, hi = blocks[k], blocks[k + 1]
+            verts = sorted({v for _, i, j in lo.faces for v in (i, j)})
+            lk_d += [d3.M([lo.top[v], hi.bot[v]]) for v in verts]
+        o.append('<g class="%s">%s</g>' % (lcls, d3.glow_path("".join(lk_d), ((5, ".1"), (2.2, ".8")))))
+
+    # lock: sparkle on the new block and a padlock badge beside it
+    top = blocks[3]
+    ax, ay = top.apex()
+    sp_pts = [(0, "opacity:0;transform:scale(0) rotate(0deg)"), (P_LOCK, "opacity:0;transform:scale(0) rotate(0deg)"),
+              (P_LOCK + .25, "opacity:1;transform:scale(1) rotate(45deg)"), (P_LOCK + .8, "opacity:0;transform:scale(.3) rotate(90deg)"),
+              (P_LOCK + .83, "opacity:0;transform:scale(0) rotate(0deg)")]
+    o.append(d3.sparkle(ax, ay, .9, lp.frames(sp_pts, "ease-out")))
+    rx, ry = max(top.top, key=lambda q: q[0])
+    badge = track(lp, [P_LOCK + .1], [(0.0, (0.0, 0.0)), (.3, (1.0, 1.0)), (1.4, (1.0, 1.0)), (1.75, (0.0, 1.0))], (0.0, 0.0), PING_FMT)
+    o.append('<g transform="translate(%s %s)"><g class="%s"><circle r="24" fill="%s" fill-opacity=".08"/>'
+             '<circle r="16" fill="%s" stroke="%s" stroke-width="1.6"/><path d="M-4.5 -2V-5.5A4.5 4.5 0 0 1 4.5 -5.5V-2" '
+             'stroke="%s" stroke-width="2"/><rect x="-7" y="-2" width="14" height="10.5" rx="1.5" fill="%s"/>'
+             '<path d="M0 2.2V4.6" stroke="%s" stroke-width="2"/></g></g>' % (n(rx + 34), n(ry - 26), badge, Y, K, Y, Y, Y, K))
+    o.append('</g>')
+
+    # trust score dial: lit ticks, a head tick that flashes when the lineage check lands, and a ping
+    dx, dy, R = 112, 120, 36
+    lx, ly = min(blocks[2].top, key=lambda q: q[0])
+    o.append('<path d="M%s %sL%s %s" stroke="%s" stroke-opacity=".22" stroke-dasharray="3 6"/>' % (n(dx + R + 8), n(dy + 12), n(lx - 8), n(ly), W))
+    o.append(d3.halo(dx, dy, ((64, ".02"), (46, ".03"))))
+    o.append('<circle cx="%d" cy="%d" r="%d" fill="%s" stroke="%s" stroke-opacity=".12"/>' % (dx, dy, R + 10, K, W))
+    lit, dim_, head = [], [], ""
+    for i in range(P_TICKS):
+        a = math.radians(135 + 270.0 * i / (P_TICKS - 1))
+        seg = "M%s %sL%s %s" % (n(dx + (R - 7) * math.cos(a)), n(dy + (R - 7) * math.sin(a)), n(dx + R * math.cos(a)), n(dy + R * math.sin(a)))
+        if i < P_LIT:
+            lit.append(seg)
+        else:
+            dim_.append(seg)
+        if i == P_LIT - 1:
+            head = seg
+    o.append('<path d="%s" stroke="%s" stroke-opacity=".16" stroke-width="2.4"/>' % ("".join(dim_), W))
+    o.append(d3.glow_path("".join(lit), ((6, ".07"), (2.4, ".9"))))
+    o.append('<path d="M%d %sL%s %dL%d %sL%s %dZ" stroke="%s" stroke-opacity=".5" stroke-width="1.4"/>'
+             % (dx, n(dy - 13), n(dx + 11.3), dy, dx, n(dy + 13), n(dx - 11.3), dy, Y))
+    o.append('<path d="M%s %sH%sM%s %sH%sM%s %sH%s" stroke="%s" stroke-opacity=".7" stroke-width="1.6"/>'
+             % (n(dx - 4), n(dy - 3.5), n(dx + 4), n(dx - 5.5), n(dy), n(dx + 5.5), n(dx - 4), n(dy + 3.5), n(dx + 4), Y))
+    o.append('<g class="%s" opacity="0">%s</g>'
+             % (track(lp, [P_SCORE[1]], [(0.0, (0.0,)), (.1, (1.0,)), (.9, (0.0,))], (0.0,), BLIP_FMT),
+                d3.glow_path(head, ((12, ".12"), (6, ".3"), (3, "1")), color=W)))
+    o.append('<g transform="translate(%d %d)"><circle class="%s" r="%d" stroke="%s" stroke-width="1.6" '
+             'vector-effect="non-scaling-stroke" opacity="0"/></g>' % (dx, dy, lp.rings([P_SCORE[1]], .9, 1.5, .8), R + 10, Y))
+    # the lineage result rides from the stack to the dial
+    o.append('<g class="%s" opacity="0"><circle cx="%s" cy="%s" r="6" fill="%s" fill-opacity=".22"/>'
+             '<rect x="%s" y="%s" width="4" height="4" fill="%s"/></g>'
+             % (lp.moves([(P_SCORE[0], P_SCORE[1] - P_SCORE[0])], dx + R + 8 - (lx - 8), dy + 12 - ly, .2),
+                n(lx - 8), n(ly), Y, n(lx - 10), n(ly - 2), Y))
+    o.append('</svg>')
+    return "".join(o)
+
+
 # ---------------------------------------------------------------- page hooks
-BUILDERS = {"geo": (geo_svg, GEO_T), "aura": (aura_svg, AURA_T)}
+BUILDERS = {"geo": (geo_svg, GEO_T), "aura": (aura_svg, AURA_T), "ledger": (pedigree_svg, PED_T)}
 
 
 def figure(key):

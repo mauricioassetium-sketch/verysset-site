@@ -845,6 +845,10 @@ PARTNERS = [
     ("https://www.bosch-sensortec.com/en",        "Bosch Sensortec", "boschsensortec.svg", 26, 441.7, 105.1),
     ("https://www.tdk.com/en/index.html",         "TDK",             "tdk.svg",            26, 699.8, 157.7),
     ("https://www.pwc.in/",                       "PwC India",       "pwcindia.svg",       34, 71.3,  35.2),
+    # technology and advisory partners (round 11). Vector marks, tight viewBox.
+    ("https://aradina.net",                       "ARADINA Technology", "aradina.svg",     34, 529.4, 155.1),
+    ("https://www.enlightenedminds.io/",          "Enlightened Minds",  "enlightenedminds.svg", 30, 262.8, 62.3),
+    ("https://orijins.ai/",                       "Orijins",            "orijins.svg",     34, 146.8, 46),
 ]
 
 NOCARDS = [
@@ -902,18 +906,25 @@ def partner_grid():
        aspect ratio renders legibly on white. Rest state is desaturated; hover restores the
        brand colour. Plain CSS filters, no mask compositing (masks were rendering blank)."""
     o = ['<div class="pgrid">']
+    n = len(PARTNERS)
+    rd, rt = n % 5, n % 3  # partners left on a short last row at 5 columns (desktop) / 3 (tablet)
     for i, (href, name, f, h, iw, ih) in enumerate(PARTNERS):
         src, real = partner_logo_file(f)
-        o.append('<a class="pcell rv" data-i="%d" href="%s" target="_blank" rel="noopener noreferrer" '
-                 'title="%s" aria-label="%s">' % (min(i, 6), href, name, name))
+        # Stretch a short last row to full width (site.css .pl-d* / .pl-t* on the 60 track grid)
+        # so no track is left empty and the gray grid background never shows as a blank cell.
+        cls = ("" if not rd or i < n - rd else " pl-d%d" % rd) + ("" if not rt or i < n - rt else " pl-t%d" % rt)
+        o.append('<a class="pcell%s rv" data-i="%d" href="%s" target="_blank" rel="noopener noreferrer" '
+                 'title="%s" aria-label="%s">' % (cls, min(i, 6), href, name, name))
         o.append('<span class="pw">')
         o.append('<img class="plogo" src="assets/%s" alt="%s" width="172" height="52" '
                  'loading="lazy" decoding="async">' % (src, name))
         o.append('</span>')
         o.append('<span class="pname">%s</span></a>' % name)
-    # Closing cell: 14 partners + 1 invitation = 15, so every breakpoint fills its rows
-    # (5 x 3 desktop, 3 x 5 tablet, 2 columns + full width cell on mobile). No gray orphan slot.
-    o.append('<a class="pcell pjoin rv" data-i="6" href="contact.html">'
+    # Closing cell: 17 partners + 1 invitation. Desktop 5 columns = 3 full rows + a last row of 2
+    # stretched cells (pl-d2), tablet 3 columns = 5 full rows + 2 stretched (pl-t2); the invitation
+    # then takes its own full width row. Mobile 2 columns = 8 rows + 1 partner, and the invitation
+    # sits inline beside it (an even count adds pj-row so it spans instead). No gray orphan slot.
+    o.append('<a class="pcell pjoin%s rv" data-i="6" href="contact.html">' % ("" if n % 2 else " pj-row") +
              '<span class="pjt"><span class="pje">Your institution</span>'
              '<span class="pjh">Become a partner</span><i class="pja" aria-hidden="true">&rarr;</i></span></a>')
     o.append('</div>')

@@ -10,6 +10,7 @@ import loopkit
 import mirror
 import pedigree
 import jurisdiction
+import engines_anim
 import rwa
 import os, re, io, json, html, hashlib
 import mapgen
@@ -1194,8 +1195,13 @@ def build_engines():
         for bl in bullets:
             b.append('<div class="v"><div class="vm"></div><h4>%s</h4></div>' % bl)
         b.append('</div></div>')
-        b.append('<div class="rv" data-i="1"><div class="eshot" style="margin-top:0">'
-                 '<img src="assets/%s" alt="%s" style="display:block;width:100%%;height:auto" loading="lazy" decoding="async"></div></div>' % (img, alt))
+        # round 8: looping dark 3D engine illustration (engines_anim.py), static image only as a fallback
+        fig = engines_anim.figure(ic)
+        if fig:
+            b.append('<div class="rv" data-i="1">' + fig + '</div>')
+        else:
+            b.append('<div class="rv" data-i="1"><div class="eshot" style="margin-top:0">'
+                     '<img src="assets/%s" alt="%s" style="display:block;width:100%%;height:auto" loading="lazy" decoding="async"></div></div>' % (img, alt))
         b.append('</div>')
     b.append('</div></section>')
 

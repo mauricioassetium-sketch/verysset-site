@@ -1172,10 +1172,6 @@ def build_index():
         b.append('<a class="kcard%s rv" data-i="%d" href="%s"><span class="kn">%s</span><h3>%s</h3><p>%s</p>'
                  '<span class="go">Open <span>&rarr;</span></span></a>' % (" lead" if i == 0 else "", i % 3, href, kn, t, p))
     b.append('</div>')
-    # ARADINA Technology credit: sits in the LAST gray box of the home page (this Explore band, #f8f8f8).
-    # Proper noun, so data-noi18n keeps it static in every locale. Black ink on gray, external link.
-    b.append('<div class="aradina" data-noi18n><a href="https://aradina.net" target="_blank" rel="noopener">'
-             'ARADINA Technology</a></div>')
     b.append('</div></section>')
 
     b.append(cta("Operate real world assets under continuous verification.",

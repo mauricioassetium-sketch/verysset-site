@@ -36,11 +36,14 @@ NAVBAR = NAV[1:9]   # links shown in the desktop bar (Contact is the CTA, Home i
 # The one public contact address. Used on the contact page, in the footer and by the form.
 CONTACT_EMAIL = "info@verysset.com"
 
-# Identity: logogen.py regenerates the flat square mark, both lockups and the favicon from one grid on
-# every build, and returns the lockup metrics used to size the header and footer <img> tags.
-LOGO = logogen.main(quiet=True)
-# Favicon = the flat square symbol (vector, crisp at 16px). ?v=2 retires the old cube from browser caches.
-FAVICON = "assets/favicon.svg?v=2"
+# Identity (round 10): a flat yellow circle carrying three nested isometric cubes, plus the VERYSSET wordmark.
+# The shipped SVG set in assets/ (logo.svg, logo-dark.svg, logo-symbol.svg, logo-symbol-yellow.svg,
+# favicon.svg and the legacy verysset-logo*.svg names) is FROZEN: the build no longer regenerates it, it
+# only reads the lockup metrics from assets/logo.json to size the header and footer <img> tags.
+with open(os.path.join(OUT, "assets", "logo.json"), encoding="utf-8") as _lf:
+    LOGO = json.load(_lf)
+# Favicon = the circle symbol, bold cut (vector, crisp at 16px). ?v=3 retires the old square from browser caches.
+FAVICON = "assets/favicon.svg?v=3"
 
 
 def logo_img(src, h):
@@ -1681,18 +1684,18 @@ def build_logo():
                 % (eb, h2, p))
 
     b = [phead("Brand identity", "Design review", "The VERYSSET mark.",
-               "A flat yellow square and a tracked black wordmark, faithful to the original model. One corner "
-               "of the square is set apart as an exact unit: the verified token carved from the real asset. "
-               "The lower edge of that cut is the cap line of the name, so symbol and wordmark share one geometry.",
+               "A flat yellow circle carrying three nested isometric cubes, and a tracked black wordmark. The "
+               "cubes are the real asset inside its verification layers: an open outer frame, solid faces and a "
+               "solid core. The name is centered on the circle, so symbol and wordmark share one axis.",
                '<div class="lgmeta"><span class="lgtag y">Design review</span>'
                '<span class="lgtag">Not in public navigation</span>'
                '<span class="lgtag">Flat, four colors</span></div>')]
 
     # 01 primary lockup
     b.append('<section class="sec tight"><div class="wrap">' +
-             hd("01", "01 Primary lockup", "Square, unit, wordmark. Nothing else.",
-                "The primary mark for every light surface. Solid yellow square, ink wordmark, no gradient, "
-                "no stroke, no effect.") +
+             hd("01", "01 Primary lockup", "Circle, cubes, wordmark. Nothing else.",
+                "The primary mark for every light surface. Solid yellow circle, ink cubes, ink wordmark, "
+                "no gradient, no stroke, no effect.") +
              '<figure class="lgplate">' + lock("assets/logo.svg", 120, "VERYSSET primary logo on white", "lgbig") +
              '<figcaption><span>Primary, on white</span><span data-noi18n>assets/logo.svg</span></figcaption></figure>'
              '<figure class="lgplate dk">' + lock("assets/logo-dark.svg", 120, "VERYSSET logo reversed on ink", "lgbig") +
@@ -1707,8 +1710,8 @@ def build_logo():
 
     b.append('<section class="sec tight alt"><div class="wrap">' +
              hd("02", "02 Size ladder", "Holds its shape from 24 to 240 pixels.",
-                "The channel stays open and the unit stays legible at header size. At 240 pixels the cut "
-                "becomes the signature.") +
+                "The frame stays open and the core stays legible at header size. At 240 pixels the nested "
+                "cubes become the signature.") +
              '<div class="lgladder">' + ladder("assets/logo.svg", False) + ladder("assets/logo-dark.svg", True) +
              '</div><div class="lgcrops">'
              '<figure class="lgcrop">' + lock("assets/logo.svg", 240, "VERYSSET logo at 240 pixels, detail") +
@@ -1729,47 +1732,55 @@ def build_logo():
                 % (" dk" if dk else "", FAVICON))
 
     b.append('<section class="sec tight"><div class="wrap">' +
-             hd("03", "03 Symbol and favicon", "The square alone, down to 16 pixels.",
-                "For favicon, app icon and avatar. A square viewBox with no padding, so the mark fills its "
-                "tile edge to edge.") +
+             hd("03", "03 Symbol and favicon", "The circle alone, down to 16 pixels.",
+                "For favicon, app icon and avatar. A square viewBox with no padding, so the circle touches its "
+                "tile edge to edge. The favicon uses a larger, bolder cut of the same cubes.") +
              '<div class="lgsym"><figure class="lgplate lgsq">' + sym("assets/logo-symbol.svg", 240) +
              '<figcaption><span>Symbol, 240 px</span><span data-noi18n>assets/logo-symbol.svg</span></figcaption></figure>'
              '<div class="lgsyms">' + symrow(False) + symrow(True) +
              '<div class="lgtabs"><span class="lgcap">Current favicon, as the browser tab shows it</span>' +
              tab(False) + tab(True) + '</div></div></div></div></section>')
 
-    # 04 construction
+    # 04 construction (circle lockup: circle D, gap, caps centered on the circle's horizontal axis)
     W = lw
+    D, GP, CAPL, BASE = LOGO["circle"], LOGO["gap"], LOGO["cap_line"], LOGO["baseline"]
+    R = D / 2.0
+    HR = R * LOGO["mark_ratio"]                       # circumradius of the cube mark
+    src_dk = open(os.path.join(OUT, "assets/logo-dark.svg"), encoding="utf-8").read()
     ps = _svg_paths("assets/logo-dark.svg")
-    g = [ps[0], ps[1].replace('fill="#FFFFFF"', 'fill="#FFFFFF" opacity=".92"')]
-    g.append('<rect class="cs" x="96" y="-8" width="32" height="112"/>')
-    for x in (0, 56, 64, 96, 128):
-        g.append('<line class="gl" x1="%d" y1="-30" x2="%d" y2="124"/>' % (x, x))
-    for y, lab, key in ((0, "TOP  0u", False), (40, "CAP LINE  40u", True), (96, "BASELINE  96u", False)):
-        g.append('<line class="gl%s" x1="-40" y1="%d" x2="%s" y2="%d"/>' % (" key" if key else "", y, fm(W + 22), y))
+    g = re.findall(r"<circle [^>]*/>", src_dk)[:1]
+    g += [ps[0], ps[1].replace('fill="#FFFFFF"', 'fill="#FFFFFF" opacity=".92"')]
+    g.append('<rect class="cs" x="%s" y="-8" width="%s" height="%s"/>' % (fm(D), fm(GP), fm(D + 16)))
+    g.append('<circle class="gl" cx="%s" cy="%s" r="%s"/>' % (fm(R), fm(R), fm(HR)))
+    for x in (0, R - HR * 0.8660254, R, R + HR * 0.8660254, D, D + GP):
+        g.append('<line class="gl" x1="%s" y1="-30" x2="%s" y2="%s"/>' % (fm(x), fm(x), fm(D + 28)))
+    for y, lab, key in ((0, "TOP  0u", False), (CAPL, "CAP LINE  %su" % fm(CAPL), False),
+                        (R, "AXIS  %su" % fm(R), True), (BASE, "BASELINE  %su" % fm(BASE), False),
+                        (D, "BOTTOM  %su" % fm(D), False)):
+        g.append('<line class="gl%s" x1="-40" y1="%s" x2="%s" y2="%s"/>' % (" key" if key else "", fm(y), fm(W + 22), fm(y)))
         g.append('<text x="%s" y="%s"%s>%s</text>' % (fm(W + 30), fm(y + 2.8), ' class="k"' if key else "", lab))
     # dimensions
-    g.append('<path class="dm" d="M-20 0V96M-24 0H-16M-24 96H-16"/>')
-    g.append('<text x="-30" y="48" text-anchor="middle" transform="rotate(-90 -30 48)">96u</text>')
-    g.append('<path class="dm" d="M64 -14H96M64 -18V-10M96 -18V-10"/>')
-    g.append('<text x="80" y="-21" text-anchor="middle">32u</text>')
-    g.append('<path class="dm" d="M60 -26V-6"/>')
-    g.append('<text x="60" y="-31" text-anchor="middle">8u</text>')
-    g.append('<path class="dm" d="M96 112H128M96 108V116M128 108V116"/>')
-    g.append('<text x="112" y="128" text-anchor="middle">32u CLEAR SPACE</text>')
-    g.append('<path class="dm" d="M%s 40V96M%s 40H%sM%s 96H%s"/>'
-             % (fm(W + 12), fm(W + 8), fm(W + 16), fm(W + 8), fm(W + 16)))
-    g.append('<text x="%s" y="72" class="m">56u CAP HEIGHT</text>' % fm(W + 30))
+    g.append('<path class="dm" d="M-20 0V%sM-24 0H-16M-24 %sH-16"/>' % (fm(D), fm(D)))
+    g.append('<text x="-30" y="%s" text-anchor="middle" transform="rotate(-90 -30 %s)">%su</text>' % (fm(R), fm(R), fm(D)))
+    g.append('<path class="dm" d="M%s -14H%sM%s -18V-10M%s -18V-10"/>' % (fm(D), fm(D + GP), fm(D), fm(D + GP)))
+    g.append('<text x="%s" y="-21" text-anchor="middle">%su</text>' % (fm(D + GP / 2.0), fm(GP)))
+    g.append('<path class="dm" d="M%s %sH%sM%s %sV%sM%s %sV%s"/>'
+             % (fm(D), fm(D + 16), fm(D + GP), fm(D), fm(D + 12), fm(D + 20), fm(D + GP), fm(D + 12), fm(D + 20)))
+    g.append('<text x="%s" y="%s" text-anchor="middle">%su CLEAR SPACE</text>' % (fm(D + GP / 2.0), fm(D + 30), fm(GP)))
+    g.append('<path class="dm" d="M%s %sV%sM%s %sH%sM%s %sH%s"/>'
+             % (fm(W + 12), fm(CAPL), fm(BASE), fm(W + 8), fm(CAPL), fm(W + 16), fm(W + 8), fm(BASE), fm(W + 16)))
+    g.append('<text x="%s" y="%s" class="m">%su CAP HEIGHT</text>' % (fm(W + 30), fm((R + BASE) / 2.0 + 2.8), fm(LOGO["cap_height"])))
     vb = "-64 -50 %s 192" % fm(W + 64 + 200)
-    rules = [("96u", "Square", "The real asset. Solid Verysset yellow, flat, no stroke, no gradient."),
-             ("32u", "Token unit", "Exactly one third of the side, set apart in the top right corner."),
-             ("8u", "Channel", "The negative space that frees the unit. Transparent, so it reads on any ground."),
-             ("40u", "Cap line", "The lower edge of the channel. Every capital of the wordmark stops on it."),
-             ("32u", "Clear space", "One unit between symbol and name, and the minimum margin around the lockup.")]
+    rules = [("%su" % fm(D), "Circle", "The ground of the symbol. Solid Verysset yellow, flat, no stroke, no gradient."),
+             ("%d%%" % round(LOGO["mark_ratio"] * 100), "Cube mark",
+              "Three nested isometric cubes in an exact 30 degree projection, circumscribed at this share of the diameter."),
+             ("3", "Nested cubes", "Open outer frame, solid middle faces, solid core. The real asset inside its verification layers."),
+             ("%su" % fm(R), "Shared axis", "The center of the circle. The capitals of the name are centered on it, from the cap line to the baseline."),
+             ("%su" % fm(GP), "Clear space", "Between symbol and name, and the minimum margin around the lockup.")]
     b.append('<section class="sec ink-band"><div class="wrap">' +
-             hd("04", "04 Construction", "One unit grid carries the whole mark.",
-                "Everything lands on an 8 unit rhythm. The cut is not decoration: it is the line the wordmark "
-                "stands under.") +
+             hd("04", "04 Construction", "One center carries the whole mark.",
+                "The circle, the cubes and the capitals share one horizontal axis. The circle is drawn taller than "
+                "the caps, because a circle carries less visual mass than a square of the same height.") +
              '<figure class="lgcon"><svg viewBox="%s" role="img" aria-label="Construction grid of the VERYSSET logo" '
              'data-noi18n>%s</svg></figure>' % (vb, "".join(g)) +
              '<ul class="lgrules">' +
@@ -1777,57 +1788,38 @@ def build_logo():
              '</ul></div></section>')
 
     # 05 color
-    sw = [("#FFD400", "Verysset yellow", "The square and its unit. Never tinted, never gold."),
+    sw = [("#FFD400", "Verysset yellow", "The circle, and the cubes of the single color symbol. Never tinted, never gold."),
           ("#E6BF00", "Deep yellow", "Hover states and fine keylines. Never the mark itself."),
-          ("#0A0A09", "Ink", "The wordmark on white and light grounds."),
+          ("#0A0A09", "Ink", "The cubes inside the circle, and the wordmark on white and light grounds."),
           ("#FFFFFF", "White", "The wordmark on ink and dark imagery.")]
     b.append('<section class="sec tight alt"><div class="wrap">' +
              hd("05", "05 Color", "Four values. No gold, no gradient.",
-                "The square is always #FFD400 on every ground, so the brand never shifts between light and dark.") +
+                "The circle is always #FFD400 on every ground, so the brand never shifts between light and dark.") +
              '<div class="lgswg">' +
              "".join('<div class="lgsw"><i style="background:%s"></i><div><b>%s</b><code data-noi18n>%s</code>'
                      '<p>%s</p></div></div>' % (h, n, h, u) for h, n, u in sw) +
              '</div></div></section>')
 
-    # 06 optional sparkle
-    def sparkle(dk):
-        p2 = _svg_paths("assets/logo-dark.svg" if dk else "assets/logo.svg")
-        gid = "lgspk" + ("d" if dk else "l")
-        return ('<svg class="lgbig" viewBox="0 0 %s %s" role="img" aria-label="Optional sparkle variant of the '
-                'VERYSSET logo"><defs><linearGradient id="%s" x1="0" y1="0" x2="1" y2="1">'
-                '<stop offset="0" stop-color="#FFD400"/><stop offset="1" stop-color="#E6BF00"/></linearGradient>'
-                '</defs>%s%s</svg>' % (fm(lw), fm(lh), gid,
-                                       p2[0].replace('fill="#FFD400"', 'fill="url(#%s)"' % gid), p2[1]))
-
-    b.append('<section class="sec tight"><div class="wrap">' +
-             hd("06", "06 Optional sparkle variant", "A single yellow ramp, for motion and events only.",
-                "<b>Optional. Not the primary mark.</b> A subtle deep yellow ramp across the square, for animated "
-                "intros and stage screens. Every file on this page stays flat.") +
-             '<div class="lgpair"><figure class="lgplate">' + sparkle(False) +
-             '<figcaption><span>Optional sparkle, on white</span><span class="lgtag">Optional</span></figcaption></figure>'
-             '<figure class="lgplate dk">' + sparkle(True) +
-             '<figcaption><span>Optional sparkle, on ink</span><span class="lgtag">Optional</span></figcaption></figure>'
-             '</div></div></section>')
-
-    # 07 files
-    files = [("assets/logo.svg", "Primary lockup", "Light grounds. Yellow square with the ink wordmark."),
-             ("assets/logo-dark.svg", "Reversed lockup", "Dark grounds. Yellow square with the white wordmark."),
-             ("assets/logo-symbol.svg", "Symbol", "Square viewBox. App icon, avatar and social profile."),
-             ("assets/favicon.svg", "Favicon", "The symbol, wired as the favicon on every page.")]
+    # 06 files
+    files = [("assets/logo.svg", "Primary lockup", "Light grounds. Yellow circle, ink cubes and the ink wordmark."),
+             ("assets/logo-dark.svg", "Reversed lockup", "Dark grounds. Yellow circle, ink cubes and the white wordmark."),
+             ("assets/logo-symbol.svg", "Symbol", "Yellow circle with ink cubes, square viewBox. App icon, avatar and social profile, on light or dark."),
+             ("assets/logo-symbol-yellow.svg", "Single color symbol", "Yellow cubes on transparent, for dark and high contrast grounds."),
+             ("assets/favicon.svg", "Favicon", "A bolder cut of the symbol, wired as the favicon on every page.")]
     rows = []
     for f, n, d in files:
         prev = sym(f, 40, "") if ("symbol" in f or "favicon" in f) else lock(f, 24, "")
         rows.append('<li><span class="lgfi%s">%s</span><div><b>%s</b><p>%s</p></div>'
                     '<code data-noi18n>%s &middot; %.1f KB</code><a class="btn gh sm" href="%s" download>Download</a></li>'
-                    % (" dk" if "dark" in f else "", prev, n, d, f,
+                    % (" dk" if ("dark" in f or "yellow" in f) else "", prev, n, d, f,
                        os.path.getsize(os.path.join(OUT, f)) / 1024.0, f))
     b.append('<section class="sec tight alt"><div class="wrap">' +
-             hd("07", "07 Files", "Self contained vectors, no fonts required.",
+             hd("06", "06 Files", "Self contained vectors, no fonts required.",
                 "The wordmark is drawn as outlines, so every file renders the same in any browser, deck or tool.") +
              '<ul class="lgfiles">' + "".join(rows) + '</ul>'
              '<p class="lgnote">Wordmark: Clash Display Semibold, converted to outlines, tracked wide and spaced '
              'optically pair by pair. Every file is generated by one script, <code data-noi18n>logogen.py</code>, '
-             'so the grid is exact in every export.</p>'
+             'so the geometry is exact in every export. Flat in every file: no gradient, no glow.</p>'
              '</div></section>')
 
     return page("logo.html", "Logo review | Verysset",

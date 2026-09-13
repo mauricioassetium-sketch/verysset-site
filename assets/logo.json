@@ -1,10 +1,18 @@
 {
- "lockup_w": 653.47,
- "lockup_h": 97,
- "square": 96,
- "unit": 32,
- "channel": 8,
- "cap_line": 40,
+ "lockup_w": 659.47,
+ "lockup_h": 104,
+ "circle": 104,
+ "gap": 30,
  "cap_height": 56,
- "clear_space": 32
+ "cap_line": 24.0,
+ "baseline": 80.0,
+ "symbol_viewbox": 512,
+ "mark_R": 190.0,
+ "mark_ratio": 0.7422,
+ "frame_w": 0.13,
+ "gap_g": 0.06,
+ "core": 0.47,
+ "middle": 0.81,
+ "frame_px": 21.39,
+ "gap_px": 9.87
 }

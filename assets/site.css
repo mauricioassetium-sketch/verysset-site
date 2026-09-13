@@ -472,9 +472,25 @@ html[lang=zh] .ia-lead,html[lang=ar] .ia-lead{letter-spacing:0;word-spacing:norm
   letter-spacing:-.02em;color:var(--ink);font-variant-numeric:tabular-nums;align-self:flex-start}
 .ia-src{margin-top:clamp(26px,3vw,38px);padding-top:clamp(20px,2.4vw,28px);border-top:1px solid var(--line)}
 .ia-srl{display:block;font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
-.ia-modes{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
-.ia-modes li{padding:6px 11px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);
-  font-size:12.5px;line-height:1.3;color:var(--ink2)}
+/* verification modes: three groups, every mode = icon tile + name + one line description */
+.ia-mg{margin-top:clamp(16px,2vw,22px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.6vw,36px)}
+.ia-mgp{min-width:0}
+h4.ia-mgh{display:flex;align-items:baseline;gap:10px;margin:0;padding-bottom:11px;border-bottom:1px solid var(--ink);
+  font-family:var(--sans);font-size:11px;font-weight:700;line-height:1.4;letter-spacing:.14em;word-spacing:normal;
+  text-transform:uppercase;color:var(--ink)}
+.ia-mgn{flex:none;font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.04em;color:var(--yl-d)}
+.ia-ml{list-style:none;margin:0;padding:0}
+.ia-ml li{display:flex;align-items:flex-start;gap:12px;min-width:0;padding:13px 0;border-bottom:1px solid var(--line)}
+.ia-mi{flex:none;display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line2);border-radius:var(--r);
+  background:var(--bg);color:var(--ink);transition:border-color .15s ease,background-color .15s ease}
+.ia-mi .ci{width:19px;height:19px}
+.ia-ml li:hover .ia-mi{border-color:var(--yl-d);background:var(--yl-w)}
+.ia-ml li:hover .ci .acf{transform:scale(1.14)}
+.ia-mt{flex:1;min-width:0;padding-top:1px}
+.ia-mt b{display:block;font-size:13.5px;font-weight:600;line-height:1.35;letter-spacing:-.005em;color:var(--ink)}
+.ia-md{display:block;margin-top:3px;font-size:12.5px;line-height:1.45;color:var(--muted)}
+html[lang=ar] h4.ia-mgh{letter-spacing:0}
+html[lang=zh] h4.ia-mgh{letter-spacing:.06em}
 html[lang=ar] .ia-bn,html[lang=ar] .ia-srl{letter-spacing:0}
 html[lang=zh] .ia-bn,html[lang=zh] .ia-srl{letter-spacing:.06em}
 @media(max-width:1000px){
@@ -482,6 +498,8 @@ html[lang=zh] .ia-bn,html[lang=zh] .ia-srl{letter-spacing:.06em}
   .chips.c4 .chip:nth-child(odd){border-left:0}
   [dir=rtl] .chips.c4 .chip:nth-child(odd){border-right:0}
   .chips.c4 .chip:nth-child(n+3){border-top:1px solid var(--line)}
+  .ia-mg{grid-template-columns:1fr}
+  .ia-ml{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(18px,3vw,32px)}
 }
 @media(max-width:880px){
   .ia-grid,.ia-th{grid-template-columns:1fr}
@@ -501,6 +519,7 @@ html[lang=zh] .ia-bn,html[lang=zh] .ia-srl{letter-spacing:.06em}
   .ia-ped li:nth-child(3)::after{display:block}
   .ia-bn{padding-inline-end:0}
   .ia-br{margin-top:0;font-size:19px;align-self:center}
+  .ia-ml{grid-template-columns:1fr}
 }
 
 /* ---------- markets ---------- */

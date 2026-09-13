@@ -613,20 +613,101 @@ PEDIGREE = [("01", "Source capture"), ("02", "Source authentication"), ("03", "I
 TRUST_BANDS = [("hold", "Hold", "&lt;60"), ("watch", "Watch", "60-74"), ("std", "Standard", "75-84"),
                ("prem", "Premium", "85-89"), ("ent", "Enterprise", "90-100")]
 
-VERIFY_MODES = ["Optical satellite imagery", "SAR radar, all-weather 24/7", "LiDAR 3D precision mapping",
-                "Drone fleets (fixed-wing, multirotor, BVLOS)", "Industrial IoT sensors",
-                "Infrared &amp; thermal cameras", "Environmental sensors", "Smart energy meters",
-                "H2 quality analyzers", "BIM &amp; building sensors", "Public registries &amp; land records",
-                "Regulatory bodies", "Commodity &amp; metals exchanges", "Carbon &amp; energy markets",
-                "Reference financial data providers", "International standards &amp; certification",
-                "Regional field verification services"]
+# Verification modes, grouped by where the evidence comes from. Each mode carries a flat 24px icon
+# (ink strokes, one yellow accent) and a one line description. Names are unchanged, so their keys hold.
+def _mi(body):
+    return '<svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false">%s</svg>' % body
+
+MODE_ICONS = {
+    "optical": _mi('<path d="M2.5 4.5H7v3H2.5zM17 4.5h4.5v3H17zM7 6h2.5M14.5 6H17"/>'
+                   '<rect class="acf" x="9.5" y="3.5" width="5" height="5" rx=".8"/>'
+                   '<path d="M10.5 11.5 6.5 19.5M13.5 11.5l4 8" stroke-dasharray="1.6 2.2"/><path d="M4 20.5h16"/>'),
+    "sar": _mi('<circle class="acf" cx="5" cy="5" r="1.9"/><path d="M9.5 5A4.5 4.5 0 0 1 5 9.5M13.5 5A8.5 8.5 0 0 1 5 13.5"/>'
+               '<path d="M11.2 21h7.3a3 3 0 0 0 .5-5.96 4.3 4.3 0 0 0-8.2-.84A3.4 3.4 0 0 0 11.2 21z"/>'),
+    "lidar": _mi('<path d="M12 8.5 19 12v6.5L12 22l-7-3.5V12zM5 12l7 3.5 7-3.5M12 15.5V22"/>'
+                 '<path d="M10.8 4.4 5.6 11M13.2 4.4l5.2 6.6" stroke-dasharray="1.6 2"/>'
+                 '<circle class="acf" cx="12" cy="3" r="1.8"/>'),
+    "drone": _mi('<path d="M9.5 9.5 7.7 7.7M14.5 9.5l1.8-1.8M9.5 14.5l-1.8 1.8M14.5 14.5l1.8 1.8"/>'
+                 '<circle cx="5.5" cy="5.5" r="3"/><circle cx="18.5" cy="5.5" r="3"/>'
+                 '<circle cx="5.5" cy="18.5" r="3"/><circle cx="18.5" cy="18.5" r="3"/>'
+                 '<rect class="acf" x="9" y="9" width="6" height="6" rx="1.2"/>'),
+    "thermal": _mi('<rect x="2.5" y="7.5" width="14" height="11" rx="1.6"/><path d="M6 7.5 7.3 5h4.4L13 7.5"/>'
+                   '<circle class="acf" cx="9.5" cy="13" r="3"/>'
+                   '<path d="M20.5 6.5c1.3 1.25 1.3 2.75 0 4s-1.3 2.75 0 4 1.3 2.75 0 4"/>'),
+    "iot": _mi('<path d="M3.5 13.5H6M3.5 17.5H6M18 13.5h2.5M18 17.5h2.5M9.4 6.2a3.8 3.8 0 0 1 5.2 0M7 3.6a7.2 7.2 0 0 1 10 0"/>'
+               '<rect x="6" y="9.5" width="12" height="12" rx="1.6"/>'
+               '<rect class="acf" x="9.5" y="13" width="5" height="5" rx=".6"/>'),
+    "env": _mi('<path class="acf" d="M6 18C6 10 11 5 19.5 4.5 19 13 14 18 6 18z"/><path d="M4 20 13 11"/>'
+               '<path d="M5 3s-2 2.4-2 3.7a2 2 0 0 0 4 0C7 5.4 5 3 5 3z"/>'),
+    "meter": _mi('<rect x="3.5" y="3.5" width="17" height="17" rx="2"/>'
+                 '<path class="acf" d="M13 6.5 8.5 13H12l-1 4.5 4.5-6.5H12z"/>'),
+    "h2": _mi('<path d="M9.5 3.5h5M10.5 3.5v5.3L5 18.6c-.5.9.1 2.2 1.2 2.2h11.6c1.1 0 1.7-1.3 1.2-2.2L13.5 8.8V3.5M7.8 13.5h8.4"/>'
+              '<circle class="acf" cx="10.3" cy="17.2" r="1.7"/><circle class="acf" cx="14" cy="16.2" r="1.1"/>'),
+    "bim": _mi('<path d="M5 21V7.5l7-4 7 4V21M3 21h18M9 10.5h2M13 10.5h2M9 14h2M13 14h2"/>'
+               '<rect class="acf" x="10.3" y="17" width="3.4" height="4"/>'),
+    "field": _mi('<path d="M12 21.5s-6.5-6.1-6.5-11a6.5 6.5 0 0 1 13 0c0 4.9-6.5 11-6.5 11z"/>'
+                 '<circle class="acf" cx="12" cy="10.5" r="2.6"/>'),
+    "registry": _mi('<path d="M5.5 2.5h9l4 4v15h-13z"/><path class="acf" d="M14.5 2.5v4h4z"/>'
+                    '<path d="M8.5 11h7v7h-7zM12 11v7M8.5 14.5h7"/>'),
+    "regulator": _mi('<path d="M3 8.5 12 3.5l9 5zM5.5 11.5v6M9.8 11.5v6M14.2 11.5v6M18.5 11.5v6"/>'
+                     '<rect class="acf" x="3" y="19.5" width="18" height="2.5" rx=".4"/>'),
+    "exchange": _mi('<path d="M2.5 21l1.8-4.5h6.4L12.5 21zM11.5 21l1.8-4.5h6.4l1.8 4.5z"/>'
+                    '<path class="acf" d="M7 15.5l1.8-4.5h6.4L17 15.5z"/>'),
+    "carbon": _mi('<path d="M7 3.5V7M7 15v5.5M12 6v4M12 15v4M17 2.5V6M17 12v4.5"/>'
+                  '<rect x="5.5" y="7" width="3" height="8" rx=".5"/><rect class="acf" x="10.5" y="10" width="3" height="5" rx=".5"/>'
+                  '<rect x="15.5" y="6" width="3" height="6" rx=".5"/>'),
+    "refdata": _mi('<path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>'
+                   '<ellipse class="acf" cx="12" cy="6" rx="7" ry="2.5"/>'),
+    "standards": _mi('<path d="M8.6 14.6 7 21.5l5-2.6 5 2.6-1.6-6.9"/><circle cx="12" cy="9.5" r="6.5"/>'
+                     '<circle class="acf" cx="12" cy="9.5" r="3"/>'),
+}
+
+VERIFY_GROUPS = [
+    ("Remote sensing", [
+        ("optical", "Optical satellite imagery", "Wide-area imagery that tracks change over time."),
+        ("sar", "SAR radar, all-weather 24/7", "Sees through cloud, smoke and darkness."),
+        ("lidar", "LiDAR 3D precision mapping", "Precise 3D models of terrain and structures."),
+        ("drone", "Drone fleets (fixed-wing, multirotor, BVLOS)", "Close-range aerial surveys, flown on demand."),
+        ("thermal", "Infrared &amp; thermal cameras", "Heat signatures that reveal activity and faults."),
+    ]),
+    ("On-site sensing", [
+        ("iot", "Industrial IoT sensors", "Live operating data, straight from the equipment."),
+        ("env", "Environmental sensors", "Air, water and soil conditions at the asset."),
+        ("meter", "Smart energy meters", "Generation and consumption, metered in real time."),
+        ("h2", "H2 quality analyzers", "Hydrogen purity, measured at the point of output."),
+        ("bim", "BIM &amp; building sensors", "Building models linked to live condition data."),
+        ("field", "Regional field verification services", "Local inspectors confirm evidence on the ground."),
+    ]),
+    ("Registries, markets &amp; standards", [
+        ("registry", "Public registries &amp; land records", "Title and ownership, checked at the source."),
+        ("regulator", "Regulatory bodies", "Permits, licenses and official filings."),
+        ("exchange", "Commodity &amp; metals exchanges", "Benchmark prices and settlement records."),
+        ("carbon", "Carbon &amp; energy markets", "Credit issuance, retirement and energy prices."),
+        ("refdata", "Reference financial data providers", "Pricing and reference data for valuation."),
+        ("standards", "International standards &amp; certification", "Recognized frameworks every check is held to."),
+    ]),
+]
+VERIFY_MODES = [name for _g, items in VERIFY_GROUPS for _ic, name, _d in items]
+
+
+def verify_modes_block():
+    """Trust Score card footer: three groups, each mode = icon tile + name + one line description."""
+    o = ['<div class="ia-src"><span class="ia-srl">Verification modes include</span><div class="ia-mg">']
+    for gi, (grp, items) in enumerate(VERIFY_GROUPS):
+        o.append('<div class="ia-mgp"><h4 class="ia-mgh"><span class="ia-mgn" aria-hidden="true">%02d</span>'
+                 '<span>%s</span></h4><ul class="ia-ml">' % (gi + 1, grp))
+        o.extend('<li><span class="ia-mi">%s</span><div class="ia-mt"><b>%s</b><span class="ia-md">%s</span></div></li>'
+                 % (MODE_ICONS[ic], name, desc) for ic, name, desc in items)
+        o.append('</ul></div>')
+    o.append('</div></div>')
+    return "".join(o)
 
 IA_STATS = [("modes", "100+", "Verification modes",
              "Optical, SAR radar, LiDAR, drones, IoT and registries, cross-validated per asset."),
             ("replica", "99.9%", "Replica accuracy",
              "Fidelity of every digital twin to the physical asset it mirrors."),
             ("layers", "9", "Twin layers",
-             "Nine layers compose every digital twin, audited before delivery."),
+             "Nine layers compose every digital twin, audited in its first year after launch."),
             ("chain", "6", "Data pedigree stages",
              "From source capture to DLT registration, stage by stage.")]
 
@@ -1240,7 +1321,7 @@ def build_institutions():
              '<div class="rv" data-i="1"><p class="ia-lead">Continuous verification of real-world assets, audited end to end.</p>'
              '<p class="lede">Every asset is cross-validated against 100+ verification modes, from satellite and SAR radar '
              'to IoT sensors and public registries. Every digital twin is independently audited by the Big 4 '
-             '(Deloitte, PwC, EY, KPMG) before delivery, reaches 99.9% replica accuracy across 9 twin layers, '
+             '(Deloitte, PwC, EY, KPMG) in its first year after launch, reaches 99.9% replica accuracy across 9 twin layers, '
              'and carries a 6-stage data pedigree from source capture to DLT registration.</p></div></div>')
 
     b.append('<ul class="chips c4 rv" data-i="2" aria-label="Verification metrics: 100+ verification modes, '
@@ -1252,10 +1333,10 @@ def build_institutions():
 
     b.append('<div class="ia-grid">')
     b.append('<div class="ia-card rv"><span class="eb">Independent audit</span>'
-             '<h3 class="t3">Audited by the Big 4 before delivery.</h3>'
+             '<h3 class="t3">Audited by the Big 4 in the first year after launch.</h3>'
              '<ul class="ia-aud" aria-label="Big 4 auditors: Deloitte, PwC, EY, KPMG">' +
              "".join('<li lang="en" dir="ltr" data-noi18n>%s</li>' % a for a in AUDITORS) + '</ul>'
-             '<p class="ia-cap">Every digital twin independently audited before delivery.</p>'
+             '<p class="ia-cap">Every digital twin independently audited in its first year after launch.</p>'
              '<p class="ia-note">Plus specialized firms per vertical. Mandatory by design.</p></div>')
     # looping data pedigree packet flow (pedigree.py): rail above the list, badges pulse in step
     ped_svg, ped_badges = pedigree.build()
@@ -1273,9 +1354,7 @@ def build_institutions():
              '<ol class="ia-band" aria-label="Trust Score bands, lowest to highest">' +
              "".join('<li class="b-%s"><span class="ia-bar" aria-hidden="true"></span><span class="ia-bn">%s</span>'
                      '<bdi class="ia-br" dir="ltr">%s</bdi></li>' % t for t in TRUST_BANDS) +
-             '</ol>'
-             '<div class="ia-src"><span class="ia-srl">Verification modes include</span><ul class="ia-modes">' +
-             "".join('<li>%s</li>' % vm for vm in VERIFY_MODES) + '</ul></div></div>')
+             '</ol>' + verify_modes_block() + '</div>')
     # animated digital twin, its own module below the Trust Score card (twin.py)
     b.append(twin.module())
     b.append('</div></section>')

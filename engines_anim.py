@@ -367,8 +367,183 @@ def geo_svg():
     return "".join(o)
 
 
+# ---------------------------------------------------------------- engine 02: Aura Verification Engine
+AURA_T = 8.0
+A_CAM = d3.Cam(300, 318, yaw=24, sp=.45)
+A_PLAT, A_PT = 184, 22
+A_ZR = 36
+A_RINGS = [(100, 360, 4, .17, 2), (128, -360, 3, .28, 1), (156, 360, 2, .1, 2)]
+A_PULSE = [.6, 4.6]
+A_BOB = 7
+A_ROT = 16
+A_SLAB, A_SZ = 74, (106, 126)          # chip base half size and z range
+A_DIE, A_DZ = 42, (126, 140)           # raised die half size and z range
+A_TILES = [(12, "doc"), (150, "target"), (208, "bars"), (322, "node")]   # plane angle, mark
+A_PHASE = [.0, .25, .5, .75]           # one packet per lane, two rides per cycle: a landing every second
+A_LANE_IN = 60                         # lanes end under the chip
+A_VERIFY = [2.4, 6.4]                  # coherence confirmed: wave, full grid, badge, sparkle
+A_ANOM = (3.1, 4.3, 5.0, 5.7)          # drift packet: enters, stops at the ring, flagged, rejected
+A_ANOM_LANE = 1
+
+
+def _local_to_world(cam, r, al):
+    """Plane polar (screen aligned) to world plan coordinates."""
+    xr, yr = r * math.cos(math.radians(al)), r * math.sin(math.radians(al))
+    return xr * cam.c + yr * cam.s, -xr * cam.s + yr * cam.c
+
+
+def _plane_xy(cam, r, al, z=0.0):
+    cx, cy = cam.p(0, 0, z)
+    return cx + r * math.cos(math.radians(al)), cy + r * math.sin(math.radians(al)) * cam.sp
+
+
+def _tile_mark(kind):
+    """Flat source glyph lying on a tile top (drawn inside a plane group)."""
+    if kind == "doc":
+        return ('<path d="M-6 -8H3L7 -4V8H-6Z" stroke="%s" stroke-width="1.4"/><path d="M-3 -2H4M-3 1.5H4M-3 5H1" stroke="%s"/>'
+                % (Y, Y))
+    if kind == "target":
+        return ('<circle r="7" stroke="%s" stroke-width="1.4"/><circle r="2.2" fill="%s"/><path d="M-10 0H-7M7 0H10M0 -10V-7M0 7V10" '
+                'stroke="%s"/>' % (Y, Y, Y))
+    if kind == "bars":
+        return '<path d="M-7 6V1H-3.5V6ZM-1.75 6V-3H1.75V6ZM3.5 6V-7H7V6Z" fill="%s"/>' % Y
+    return ('<path d="M0 -8L7 -4V4L0 8L-7 4V-4Z" stroke="%s" stroke-width="1.4"/><circle r="2.4" fill="%s"/>' % (Y, Y))
+
+
+def aura_svg():
+    lp = lk.Loop("ea", AURA_T, "engines: aura verification chip, lanes and drift rejection, dark 3D, loop %gs" % AURA_T)
+    cam = A_CAM
+    sp = cam.sp
+    o = [_open("Aura Verification Engine: evidence from four sources is checked by an AI core, a drifting record is "
+               "flagged and rejected, coherent records are confirmed")]
+    o.append(d3.panel(VW, VH, seams=((200, 400), (160, 320))))
+    hx, hy = cam.p(0, 0, A_SZ[1])
+    o.append(d3.halo(hx, hy + 30))
+    o.append(_platform(cam, A_PLAT, A_PT))
+    dim = _dim(lp, AURA_T)
+    o.append(d3.pool(cam, 0, 0, 0, cls=dim))
+
+    # four source tiles, each with a lane into the core; one packet per lane, two rides per cycle
+    tiles = []
+    for al, kind in A_TILES:
+        r = 200.0
+        while True:
+            wx, wy = _local_to_world(cam, r, al)
+            if max(abs(wx), abs(wy)) <= A_PLAT - 26:
+                break
+            r -= 2
+        tiles.append((al, kind, r, wx, wy))
+    for al, kind, r, wx, wy in tiles:
+        x0, y0 = _plane_xy(cam, r - 24, al)
+        x1, y1 = _plane_xy(cam, A_LANE_IN, al)
+        o.append(d3.glow_path("M%s %sL%s %s" % (n(x0), n(y0), n(x1), n(y1)), ((5, ".03"), (2.2, ".08"), (1, ".32"))))
+        for f in (.3, .52, .74):
+            cx, cy = x0 + (x1 - x0) * f, y0 + (y1 - y0) * f
+            o.append('<circle cx="%s" cy="%s" r="1.6" fill="%s" fill-opacity=".45"/>' % (n(cx), n(cy), Y))
+    landings, emits = [], []
+    for k, (al, kind, r, wx, wy) in enumerate(tiles):
+        x0, y0 = _plane_xy(cam, r - 24, al)
+        x1, y1 = _plane_xy(cam, A_LANE_IN, al)
+        ph = A_PHASE[k]
+        cls, arr = d3.stream(lp, ph, x1 - x0, y1 - y0, laps=2, edge=.12)
+        landings += arr
+        emits.append([(t - AURA_T / 2.0) % AURA_T for t in arr] or [0.0])
+        px, py = x0 + (x1 - x0) * ph, y0 + (y1 - y0) * ph
+        o.append('<g class="%s"><circle cx="%s" cy="%s" r="8" fill="%s" fill-opacity=".14"/><circle cx="%s" cy="%s" r="4.5" '
+                 'fill="%s" fill-opacity=".35"/><rect x="%s" y="%s" width="4.4" height="4.4" fill="%s"/></g>'
+                 % (cls, n(px), n(py), Y, n(px), n(py), Y, n(px - 2.2), n(py - 2.2), Y))
+    landings.sort()
+
+    # drift packet: white, rides the left lane, stops at the outer ring, is flagged, then rejected outward
+    al, kind, r, wx, wy = tiles[A_ANOM_LANE]
+    ax0, ay0 = _plane_xy(cam, r - 24, al)
+    stop = _plane_xy(cam, 158, al)
+    back = _plane_xy(cam, r + 6, al)
+    t0, t1, t2, t3 = A_ANOM
+    mv = lambda p, op: "opacity:%s;transform:translate(%spx,%spx)" % (op, n(p[0] - ax0), n(p[1] - ay0))
+    drift = lp.frames([(0, mv((ax0, ay0), 0)), (t0, mv((ax0, ay0), 0)), (t0 + .2, mv((ax0, ay0), 1)),
+                       (t1, mv(stop, 1)), (t2, mv(stop, 1)), (t3, mv(back, 0)), (t3 + .03, mv((ax0, ay0), 0))], "ease-in-out")
+    o.append('<g class="%s" opacity="0"><circle cx="%s" cy="%s" r="8" fill="%s" fill-opacity=".12"/>'
+             '<rect x="%s" y="%s" width="7" height="7" stroke="%s" stroke-width="1.4"/></g>'
+             % (drift, n(ax0), n(ay0), W, n(ax0 - 3.5), n(ay0 - 3.5), W))
+
+    for al, kind, r, wx, wy in sorted(tiles, key=lambda t: cam.p(t[3], t[4], 0)[1]):
+        tile = d3.Box(cam, wx, wy, 17, 17, 0, 24, A_ROT)
+        o.append(tile.svg(tint=(".1", ".06", ".03"), edge=".26", top_edge=".46"))
+        o.append(tile.warm(bands=((0, .18, ".14"), (.18, .4, ".06")), rim=False))
+        tx, ty = cam.p(wx, wy, 24)
+        o.append('<g transform="translate(%s %s) scale(1 %s)">%s</g>' % (n(tx), n(ty), n(sp, 3), _tile_mark(kind)))
+    for k, (al, kind, r, wx, wy) in enumerate(tiles):
+        tx, ty = cam.p(wx, wy, 24)
+        o.append('<g class="%s" opacity="0"><circle cx="%s" cy="%s" r="22" fill="%s" fill-opacity=".08"/>'
+                 '<circle cx="%s" cy="%s" r="12" fill="%s" fill-opacity=".16"/></g>'
+                 % (track(lp, emits[k], BLIP_ENV, (0.0,), BLIP_FMT), n(tx), n(ty), Y, n(tx), n(ty), Y))
+
+    # rings, then the processing wave that confirms coherence
+    o.append(_pulse_rings(lp, cam, 0, 0, A_ZR, A_RINGS, A_PULSE))
+    o.append(cam.plane(0, 0, A_ZR) + '<circle class="%s" r="56" stroke="%s" stroke-width="1.6" vector-effect="non-scaling-stroke" '
+             'opacity="0"/></g>' % (lp.rings(A_VERIFY, 1.5, 3.1, .8), Y))
+
+    # drift flag above the stopped packet: white ring and warning mark
+    fx, fy = stop
+    o.append('<g transform="translate(%s %s) scale(1 %s)"><circle class="%s" r="10" stroke="%s" stroke-width="1.5" '
+             'vector-effect="non-scaling-stroke" opacity="0"/></g>'
+             % (n(fx), n(fy), n(sp, 3), lp.rings([t1 + .05, t1 + .4], .6, 2.6, .9), W))
+    flag = track(lp, [t1 + .05], [(0.0, (0.0, 0.0)), (.25, (1.0, 1.0)), (t3 - t1 - .45, (1.0, 1.0)), (t3 - t1 - .1, (0.0, .6))],
+                 (0.0, 0.0), PING_FMT)
+    o.append('<g transform="translate(%s %s)"><g class="%s" opacity="0"><path d="M0 -14L12 7H-12Z" fill="%s" stroke="%s" '
+             'stroke-width="1.6"/><path d="M0 -6V1M0 3.6V4" stroke="%s" stroke-width="2"/></g></g>'
+             % (n(fx), n(fy - 26), flag, K, W, W))
+
+    # the AI core: a floating chip, raised die with a 3x3 cell grid lit by each landing
+    o.append('<g class="%s">' % _bob(lp, A_BOB, AURA_T))
+    slab = d3.Box(cam, 0, 0, A_SLAB, A_SLAB, A_SZ[0], A_SZ[1], A_ROT)
+    o.append(slab.svg(tint=(".085", ".05", ".024"), edge=".22", top_edge=".4"))
+    o.append(slab.warm(bands=((0, .22, ".2"), (.22, .5, ".08"))))
+    o.append('<g class="%s" opacity="0">%s</g>'
+             % (track(lp, landings, [(0.0, (0.0,)), (.1, (1.0,)), (.6, (0.0,))], (0.0,), BLIP_FMT),
+                d3.glow_path(slab.bottom_edges(), ((10, ".1"), (5, ".24"), (2, "1")))))
+    rr = math.radians(A_ROT)
+    pins = []
+    for k in range(-3, 4):
+        u = k * 18.0
+        for a, b in ((u, A_SLAB - 10), (A_SLAB - 10, u)):
+            q0 = (a * math.cos(rr) - b * math.sin(rr), a * math.sin(rr) + b * math.cos(rr))
+            pins.append(cam.p(q0[0], q0[1], A_SZ[1]))
+    o.append('<path d="%s" stroke="%s" stroke-opacity=".5" stroke-width="2"/>' % ("".join("M%s %sh0" % (n(x), n(y)) for x, y in pins), Y))
+    die = d3.Box(cam, 0, 0, A_DIE, A_DIE, A_DZ[0], A_DZ[1], A_ROT)
+    o.append(die.svg(tint=(".1", ".06", ".03"), edge=".26", top_edge=".55"))
+    cells = []
+    for i in range(3):
+        for j in range(3):
+            u, v = (i - 1) * 24.0, (j - 1) * 24.0
+            cxw, cyw = u * math.cos(rr) - v * math.sin(rr), u * math.sin(rr) + v * math.cos(rr)
+            cells.append(d3.Box(cam, cxw, cyw, 9, 9, A_DZ[1], A_DZ[1], A_ROT).top)
+    o.append('<path d="%s" fill="%s" fill-opacity=".1" stroke="%s" stroke-opacity=".3"/>' % ("".join(d3.M(c, True) for c in cells), Y, Y))
+    order = [4, 0, 8, 2, 6, 1, 7, 3, 5]
+    for idx, c in enumerate(cells):
+        mine = [t for m, t in enumerate(landings) if order[m % 9] == idx]
+        mine += [t + .08 * idx for t in A_VERIFY]
+        o.append('<polygon class="%s" opacity="0" points="%s" fill="%s"/>'
+                 % (track(lp, mine, [(0.0, (0.0,)), (.08, (.95,)), (.55, (0.0,))], (0.0,), BLIP_FMT), d3.P(c), Y))
+    ax, ay = die.apex()
+    sp_pts = [(0, "opacity:0;transform:scale(0) rotate(0deg)")]
+    for t in A_VERIFY:
+        sp_pts += [(t + .7, "opacity:0;transform:scale(0) rotate(0deg)"), (t + .95, "opacity:1;transform:scale(1) rotate(45deg)"),
+                   (t + 1.5, "opacity:0;transform:scale(.3) rotate(90deg)"), (t + 1.53, "opacity:0;transform:scale(0) rotate(0deg)")]
+    o.append(d3.sparkle(ax, ay, .9, lp.frames(sp_pts, "ease-out")))
+    badge = track(lp, [t + .3 for t in A_VERIFY], [(0.0, (0.0, 0.0)), (.3, (1.0, 1.0)), (1.25, (1.0, 1.0)), (1.6, (0.0, 1.0))],
+                  (0.0, 0.0), PING_FMT)
+    bx, by = ax + 62, ay - 12
+    o.append('<g transform="translate(%s %s)"><g class="%s"><circle r="22" fill="%s" fill-opacity=".08"/>'
+             '<circle r="15" fill="%s"/><path d="M-6 .5L-1.8 4.6L6.4 -4" stroke="%s" stroke-width="2.4"/></g></g>'
+             % (n(bx), n(by), badge, Y, Y, K))
+    o.append('</g></svg>')
+    return "".join(o)
+
+
 # ---------------------------------------------------------------- page hooks
-BUILDERS = {"geo": (geo_svg, GEO_T)}
+BUILDERS = {"geo": (geo_svg, GEO_T), "aura": (aura_svg, AURA_T)}
 
 
 def figure(key):

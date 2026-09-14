@@ -846,7 +846,8 @@ PARTNERS = [
     ("https://www.tdk.com/en/index.html",         "TDK",             "tdk.svg",            26, 699.8, 157.7),
     ("https://www.pwc.in/",                       "PwC India",       "pwcindia.svg",       34, 71.3,  35.2),
     # technology and advisory partners (round 11). Vector marks, tight viewBox.
-    ("https://aradina.net",                       "ARADINA Technology", "aradina.svg",     34, 529.4, 155.1),
+    ("https://aradina.net",                       "ARADINA Technology", "aradina.svg",     34, 627.0, 120.0),
+    ("https://blockestate.ae",                      "BlockEstate",       "blockestate.svg",   34, 780.0, 120.0),
     ("https://www.enlightenedminds.io/",          "Enlightened Minds",  "enlightenedminds.svg", 30, 262.8, 62.3),
     ("https://orijins.ai/",                       "Orijins",            "orijins.svg",     34, 146.8, 46),
 ]

@@ -106,6 +106,7 @@
     "bergen-norway.3b09":["Bergen, Norway","Bergen, Noruega","Bergen, Noruega","挪威卑尔根","Берген, Норвегия","بيرغن، النرويج"],
     "between-symbol-and-name-and-the-minimum.0ca6":["Between symbol and name, and the minimum margin around the lockup.","Between symbol and name, and the minimum margin around the lockup.","Between symbol and name, and the minimum margin around the lockup.","Between symbol and name, and the minimum margin around the lockup.","Between symbol and name, and the minimum margin around the lockup.","Between symbol and name, and the minimum margin around the lockup."],
     "bim-building-sensors.2fe6":["BIM & building sensors","BIM y sensores de edificios","BIM e sensores de edifícios","BIM 与建筑传感器","BIM и датчики зданий","BIM ومستشعرات المباني"],
+    "blockestate.c272":["BlockEstate","BlockEstate","BlockEstate","BlockEstate","BlockEstate","BlockEstate"],
     "bosch-sensortec.0a64":["Bosch Sensortec","Bosch Sensortec","Bosch Sensortec","Bosch Sensortec","Bosch Sensortec","Bosch Sensortec"],
     "brand-identity.07a6":["Brand identity","Brand identity","Brand identity","Brand identity","Brand identity","Brand identity"],
     "brine-and-water-rights.936b":["Brine and water rights","Salmuera y derechos de agua","Salmoura e direitos de água","卤水与水权","Рассол и права на воду","المحلول الملحي وحقوق المياه"],
